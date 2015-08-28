@@ -22,10 +22,12 @@ if __name__=='__main__':
     """ρを定義する(ρ=0.5で良いか判断し，収束しなければ値を変える．)"""
     p = 0.5
     """1. wを定義する（64個の個数を持った配列をrandomで作成する）"""
-    w = np.random.randn(1,64)
+    w = np.random.randn(1, 64)
 
     """5. 全て正しく識別できるまで繰り返す．"""
         #"""4. for(i=0; i< nun_examples; i++)"""
+    i = 0
+    for var in range(0, nun_examples):
          #   """2. Xのx_iを取り出す．"""
 
           #  """2. g(x_i) = <w, x_i>を計算する"""

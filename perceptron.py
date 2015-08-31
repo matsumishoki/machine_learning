@@ -43,7 +43,14 @@ if __name__=='__main__':
                 print "no"
             else:
                 print "good"
+                print "t_i * g_i_new:", t_i * g_i_new
         else:
             print "Ok"
     """結果を表示する
     結果とは, g(x_i) = <w_new, x_i>の直線を描き，tをプロットしたものである"""
+    """具体的な結果の出力の手順としては
+    1. if t_i * g_i > 0 or t_i * g_i_new > 0:の条件文を記述する
+    2. if w or w_new:により正しいwとw_newを取り出す
+    3. plt.matshow()を使い、wとw_newの点をplotする(線を引きたい)
+    4. X[0]からX[360]までの点をplotする
+    5.可視化が出来て問題がなければ完成である"""

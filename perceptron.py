@@ -17,7 +17,7 @@ if __name__=='__main__':
     t[t==0] = -1
     nun_examples = len(X)
     images = digits.images
-    plt.matshow(images[5], cmap=plt.cm.gray)
+    plt.matshow(images[4], cmap=plt.cm.gray)
     plt.show()
     """ρを定義する(ρ=0.5で良いか判断し，収束しなければ値を変える．)"""
     p = 0.5
@@ -26,14 +26,15 @@ if __name__=='__main__':
 
     """5. 全て正しく識別できるまで繰り返す．"""
         #"""4. for(i=0; i< nun_examples; i++)"""
-    i = 0
-    for var in range(0, nun_examples):
+    for x in X:
+        print x
          #   """2. Xのx_iを取り出す．"""
-
+        
+    
           #  """2. g(x_i) = <w, x_i>を計算する"""
 
            # """3. もしｘ_iが間違っていたならば，wを修正する(w_new = w + ρ*t_i*x_i )
            #    間違っているとは，g(x_i)の符号がクラスラベルt_iと逆の場合である """
 
-    """結果を表示する"""
-    """結果とは, g(x_i) = <w_new, x_i>の直線を描き，tをプロットしたものである"""
+    """結果を表示する
+    結果とは, g(x_i) = <w_new, x_i>の直線を描き，tをプロットしたものである"""

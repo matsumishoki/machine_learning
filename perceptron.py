@@ -28,14 +28,22 @@ if __name__=='__main__':
         #"""4. for(i=0; i< nun_examples; i++)"""
     for x_i, t_i in zip(X, t):
          #   """2. Xのx_iと、t_iを取り出す．"""
-        print x_i
-        print t_i
+        #print "x_i:", x_i
+        #print "t_i:", t_i
           #  """2. g(x_i) = <w, x_i>を計算する"""
-        g = np.inner(w, x_i)
-        print g
+        g_i = np.inner(w, x_i)
+        #print "g_i:", g_i
            # """3. もしｘ_iが間違っていたならば，wを修正する(w_new = w + ρ*t_i*x_i )
         
           #    間違っているとは，g(x_i)の符号がクラスラベルt_iと逆の場合である """
-        
+        if t_i * g_i < 0:
+            w_new = w + p * t_i * x_i
+            g_i_new = np.inner(w_new, x_i)
+            if t_i * g_i_new < 0:
+                print "no"
+            else:
+                print "good"
+        else:
+            print "Ok"
     """結果を表示する
     結果とは, g(x_i) = <w_new, x_i>の直線を描き，tをプロットしたものである"""

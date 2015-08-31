@@ -26,8 +26,9 @@ if __name__=='__main__':
 
     """5. 全て正しく識別できるまで繰り返す．"""
         #"""4. for(i=0; i< nun_examples; i++)"""
-    for x in X:
-        print x
+    for x_i, t_i in zip(X, t):
+        print x_i
+        print t_i
          #   """2. Xのx_iを取り出す．"""
         
     

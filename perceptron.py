@@ -50,11 +50,10 @@ if __name__ == '__main__':
 
         w = w_new
 
-    """結果を表示する
-    結果とは, g(x_i) = <w_new, x_i>の直線を描き，tをプロットしたものである"""
-    """具体的な結果の出力の手順としては
-    1. if t_i * g_i > 0 or t_i * g_i_new > 0:の条件文を記述する
-    2. if w or w_new:により正しいwとw_newを取り出す
-    3. plt.matshow()を使い、wとw_newの点をplotする(線を引きたい)
-    4. X[0]からX[360]までの点をplotする
-    5.可視化が出来て問題がなければ完成である"""
+    # 予測クラスと正解ラベルとの比較をし，正解率を表示する
+    y = np.sign(np.inner(w, X))  # 予測クラス
+    print "y:", y
+    print "t:", t
+    num_correct = np.sum(y == t)  # 正解の個数
+    correct_percent = num_correct / float(num_examples) * 100
+    print "correct_percent:", correct_percent

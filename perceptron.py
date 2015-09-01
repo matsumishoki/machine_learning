@@ -55,3 +55,8 @@ if __name__ == '__main__':
     # 予測クラスと真のクラスを表示する
     print "y:", y
     print "t:", t
+
+    # wの可視化
+    print "w:", w
+    plt.matshow(w.reshape(8, 8), cmap=plt.cm.gray)
+    plt.show()

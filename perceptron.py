@@ -15,7 +15,7 @@ if __name__ == '__main__':
     X = digits.data
     t = digits.target
     t[t == 0] = -1
-    nun_examples = len(X)
+    num_examples = len(X)
     images = digits.images
     plt.matshow(images[4], cmap=plt.cm.gray)
     plt.show()
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     w = np.random.randn(64)
 
     """5. 全て正しく識別できるまで繰り返す．"""
-    # """4. for(i=0; i< nun_examples; i++)"""
+    # """4. for(i=0; i< num_examples; i++)"""
     for x_i, t_i in zip(X, t):
         # """2. Xのx_iと、t_iを取り出す．"""
         # print "x_i:", x_i

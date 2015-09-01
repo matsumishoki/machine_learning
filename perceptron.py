@@ -43,9 +43,13 @@ if __name__ == '__main__':
                 print "no"
             else:
                 print "good"
-                print "t_i * g_i_new:", t_i * g_i_new
+                # print "t_i * g_i_new:", t_i * g_i_new
         else:
             print "Ok"
+            w_new = w
+
+        w = w_new
+
     """結果を表示する
     結果とは, g(x_i) = <w_new, x_i>の直線を描き，tをプロットしたものである"""
     """具体的な結果の出力の手順としては

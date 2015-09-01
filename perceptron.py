@@ -17,6 +17,7 @@ if __name__ == '__main__':
     t[t == 0] = -1
     num_examples = len(X)
     images = digits.images
+    max_iteration = 100
     plt.matshow(images[4], cmap=plt.cm.gray)
     plt.show()
     """ρを定義する(ρ=0.5で良いか判断し，収束しなければ値を変える．)"""
@@ -25,35 +26,29 @@ if __name__ == '__main__':
     w = np.random.randn(64)
 
     """5. 全て正しく識別できるまで繰り返す．"""
-    # """4. for(i=0; i< num_examples; i++)"""
-    for x_i, t_i in zip(X, t):
-        # """2. Xのx_iと、t_iを取り出す．"""
-        # print "x_i:", x_i
-        # print "t_i:", t_i
-        #  """2. g(x_i) = <w, x_i>を計算する"""
-        g_i = np.inner(w, x_i)
-        # print "g_i:", g_i
-        # """3. もしｘ_iが間違っていたならば，wを修正する(w_new = w + ρ*t_i*x_i )
+    for epoch in range(max_iteration):
+        # """4. for(i=0; i< num_examples; i++)"""
+        for x_i, t_i in zip(X, t):
+            # """2. Xのx_iと、t_iを取り出す．"""
+            #  """2. g(x_i) = <w, x_i>を計算する"""
+            g_i = np.inner(w, x_i)
+            # """3. もしｘ_iが間違っていたならば，wを修正する(w_new = w + ρ*t_i*x_i )
 
-        #    間違っているとは，g(x_i)の符号がクラスラベルt_iと逆の場合である """
-        if t_i * g_i < 0:
-            w_new = w + p * t_i * x_i
-            g_i_new = np.inner(w_new, x_i)
-            if t_i * g_i_new < 0:
-                print "no"
+            #    間違っているとは，g(x_i)の符号がクラスラベルt_iと逆の場合である """
+            if t_i * g_i < 0:
+                w_new = w + p * t_i * x_i
             else:
-                print "good"
-                # print "t_i * g_i_new:", t_i * g_i_new
-        else:
-            print "Ok"
-            w_new = w
+                w_new = w
 
-        w = w_new
+            w = w_new
 
-    # 予測クラスと正解ラベルとの比較をし，正解率を表示する
-    y = np.sign(np.inner(w, X))  # 予測クラス
+        # 予測クラスと正解ラベルとの比較をし，正解率を表示する
+        y = np.sign(np.inner(w, X))  # 予測クラス
+        num_correct = np.sum(y == t)  # 正解の個数
+        correct_percent = num_correct / float(num_examples) * 100
+        print "correct_percent:", correct_percent
+        if correct_percent == 100.0:
+            break
+
     print "y:", y
     print "t:", t
-    num_correct = np.sum(y == t)  # 正解の個数
-    correct_percent = num_correct / float(num_examples) * 100
-    print "correct_percent:", correct_percent

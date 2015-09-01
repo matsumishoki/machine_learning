@@ -10,11 +10,11 @@ import matplotlib.pyplot as plt
 from sklearn.datasets import load_digits
 
 # main文
-if __name__=='__main__':
+if __name__ == '__main__':
     digits = load_digits(2)
     X = digits.data
     t = digits.target
-    t[t==0] = -1
+    t[t == 0] = -1
     nun_examples = len(X)
     images = digits.images
     plt.matshow(images[4], cmap=plt.cm.gray)
@@ -25,17 +25,17 @@ if __name__=='__main__':
     w = np.random.randn(1, 64)
 
     """5. 全て正しく識別できるまで繰り返す．"""
-        #"""4. for(i=0; i< nun_examples; i++)"""
+    # """4. for(i=0; i< nun_examples; i++)"""
     for x_i, t_i in zip(X, t):
-         #   """2. Xのx_iと、t_iを取り出す．"""
-        #print "x_i:", x_i
-        #print "t_i:", t_i
-          #  """2. g(x_i) = <w, x_i>を計算する"""
+        # """2. Xのx_iと、t_iを取り出す．"""
+        # print "x_i:", x_i
+        # print "t_i:", t_i
+        #  """2. g(x_i) = <w, x_i>を計算する"""
         g_i = np.inner(w, x_i)
-        #print "g_i:", g_i
-           # """3. もしｘ_iが間違っていたならば，wを修正する(w_new = w + ρ*t_i*x_i )
-        
-          #    間違っているとは，g(x_i)の符号がクラスラベルt_iと逆の場合である """
+        # print "g_i:", g_i
+        # """3. もしｘ_iが間違っていたならば，wを修正する(w_new = w + ρ*t_i*x_i )
+
+        #    間違っているとは，g(x_i)の符号がクラスラベルt_iと逆の場合である """
         if t_i * g_i < 0:
             w_new = w + p * t_i * x_i
             g_i_new = np.inner(w_new, x_i)

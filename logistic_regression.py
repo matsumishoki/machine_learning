@@ -26,3 +26,6 @@ if __name__ == '__main__':
     t = digits.target
     x = X_raw[0]
     X = np.hstack((X_raw, np.ones((360, 1))))
+
+    # ρを定義する(ρ=0.1で良いか判断し，収束しなければ値を変える．)
+    rho = 0.1

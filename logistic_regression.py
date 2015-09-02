@@ -16,6 +16,11 @@ if __name__ == '__main__':
     plt.matshow(images[4], cmap=plt.cm.gray)
     plt.show()
 
+    # シグモイド関数を定義する
+    def sigmoid(s):
+        y = 1 / (1 + np.exp(-s))
+        return y
+
     # データ・セットの読み込み
     X_raw = digits.data
     t = digits.target

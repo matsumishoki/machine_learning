@@ -38,3 +38,7 @@ if __name__ == '__main__':
 
     # print y
     # print sigmoid(y)
+
+    # 合成関数の対数をとる
+    L = np.log(sigmoid(y))
+    print L

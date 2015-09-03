@@ -23,23 +23,35 @@ if __name__ == '__main__':
     plt.show()
 
     # データ・セットの読み込み
-    X_raw = digits.data
+    X_raw = digits.data / 16.0
     t = digits.target
+    num_examples = len(X_raw)
     x = X_raw[0]
-    X = np.hstack((X_raw, np.ones((360, 1))))
+    X = np.hstack((X_raw, np.ones((num_examples, 1))))
 
     # ρを定義する(ρ=0.1で良いか判断し，収束しなければ値を変える．)
-    rho = 0.1
+    rho = 0.01
 
     # wを定義する（65個の個数を持った配列をrandomで作成する）
     w = np.random.randn(65)
+#    w[-1] = 0
 
-    # wとXの内積を計算する
-    y = np.inner(w, X)
+    # 確率的勾配降下法
+    for epoch in range(100):
+        for x_i, t_i in zip(X, t):
+            y_i = sigmoid(np.inner(w, x_i))
+            w_new = w - rho * (y_i - t_i) * x_i
+            w = w_new
 
-    # print y
-    # print sigmoid(y)
+#        e_i = -(t_i*(np.log(y_i)) + (1 - t_i)*np.log(1 - y_i))
+#        print "t_i:", t_i, ",y_i:", y_i, "np.inner(w, x_i):", np.inner(w, x_i)
+#        print "    E_i:", e_i, ", |w|:", np.linalg.norm(w)
+#        assert not (np.isnan(e_i) or np.isinf(e_i)), "e_i == {}".format(e_i)
 
-    # 合成関数の対数をとる
-    L = np.log(sigmoid(y))
-    print L
+        y = sigmoid(np.inner(w, X))
+        error = np.sum(-(t*(np.log(y)) + (1 - t)*np.log(1 - y)))
+        print error
+
+    # 正解クラスと予測クラスとの比較
+    predict_class = y >= 0.5
+    print t == predict_class

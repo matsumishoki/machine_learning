@@ -32,3 +32,9 @@ if __name__ == '__main__':
 
     # wを定義する（65個の個数を持った配列をrandomで作成する）
     w = np.random.randn(65)
+
+    # wとXの内積を計算する
+    y = np.inner(w, X)
+
+    # print y
+    # print sigmoid(y)

@@ -9,17 +9,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.datasets import load_digits
 
+
+def sigmoid(s):
+    y = 1 / (1 + np.exp(-s))
+    return y
+
+
 # main文
 if __name__ == '__main__':
     digits = load_digits(2)
     images = digits.images
     plt.matshow(images[4], cmap=plt.cm.gray)
     plt.show()
-
-    # シグモイド関数を定義する
-    def sigmoid(s):
-        y = 1 / (1 + np.exp(-s))
-        return y
 
     # データ・セットの読み込み
     X_raw = digits.data

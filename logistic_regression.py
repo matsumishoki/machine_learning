@@ -54,4 +54,6 @@ if __name__ == '__main__':
 
     # 正解クラスと予測クラスとの比較
     predict_class = y >= 0.5
-    print t == predict_class
+    num_correct = np.sum(t == predict_class)
+    correct_percent = num_correct / float(num_examples) * 100
+    print "correct_percent:", correct_percent

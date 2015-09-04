@@ -48,7 +48,7 @@ if __name__ == '__main__':
         # 負の対数尤度関数の値を表示する
         y = sigmoid(np.inner(w, X))
         error = np.sum(-(t*(np.log(y)) + (1 - t)*np.log(1 - y)))
-        # print "error:", error
+        print "error:", error
 
         # 正解クラスと予測クラスとの比較
         predict_class = y >= 0.5
@@ -63,7 +63,7 @@ if __name__ == '__main__':
     print "t:", t == 1
 
     # wの可視化
-    w_t = w[0:64]
-    print "w_t:", w_t
-    plt.matshow(w_t.reshape(8, 8), cmap=plt.cm.gray)
+    w_true = w[0:64]  # w_trueとは結果をプロットするために定義したものである
+    print "w_true:", w_true
+    plt.matshow(w_true.reshape(8, 8), cmap=plt.cm.gray)
     plt.show()

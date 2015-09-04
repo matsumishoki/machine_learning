@@ -48,6 +48,8 @@ if __name__ == '__main__':
         # 負の対数尤度関数の値を表示する
         y = sigmoid(np.inner(w, X))
         error = np.sum(-(t*(np.log(y)) + (1 - t)*np.log(1 - y)))
+        assert not np.any(np.isnan(error))
+        assert not np.any(np.isinf(error))
         print "error:", error
 
         # 正解クラスと予測クラスとの比較

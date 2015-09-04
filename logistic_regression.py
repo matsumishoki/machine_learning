@@ -50,10 +50,16 @@ if __name__ == '__main__':
 
         y = sigmoid(np.inner(w, X))
         error = np.sum(-(t*(np.log(y)) + (1 - t)*np.log(1 - y)))
-        print error
+        print "error:", error
 
-    # 正解クラスと予測クラスとの比較
-    predict_class = y >= 0.5
-    num_correct = np.sum(t == predict_class)
-    correct_percent = num_correct / float(num_examples) * 100
-    print "correct_percent:", correct_percent
+        # 正解クラスと予測クラスとの比較
+        predict_class = y >= 0.5
+        num_correct = np.sum(t == predict_class)
+        correct_percent = num_correct / float(num_examples) * 100
+        print "correct_percent:", correct_percent
+
+    # wの可視化
+    w_t = w[0:64]
+    plt.matshow(w_t.reshape(8, 8), cmap=plt.cm.gray)
+    plt.show()
+    print "w_t:", w_t

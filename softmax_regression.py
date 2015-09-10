@@ -92,7 +92,10 @@ if __name__ == '__main__':
         if correct_percent == 100.0:
             break
 
-    # 予測クラスと真のクラスを表示する
 
-
-    # wの可視化
+   # wの可視化
+    for w_k in w:
+        w_true = w_k[0:64]  # w_trueとは結果をプロットするために定義したものである
+        print "w_true:", w_true
+        plt.matshow(w_true.reshape(8, 8), cmap=plt.cm.gray)
+        plt.show()

@@ -39,10 +39,16 @@ if __name__ == '__main__':
     # ρを定義する(ρ=0.1で良いか判断し，収束しなければ値を変える．)
     rho = 0.5
 
+    # 収束するまで繰り返す
+    max_iteration = 1000
+
     # dim_features次元の重みをnum_classesクラス分用意する
     w = np.random.randn(num_classes, dim_features)
-    for epoch in range(100):
-        # 確率的勾配降下法
+
+    # 確率的勾配降下法
+    error_history = []
+    correct_percent_history = []
+    for epoch in range(max_iteration):
         for x_i, t_i in zip(X, t):
             y_i = softmax(np.inner(w, x_i))
             T = onehot(t_i)
@@ -51,7 +57,7 @@ if __name__ == '__main__':
         # print w_new
 
 
-        # 負の対数尤度関数の値を表示する
+        #負の対数尤度関数の値を表示する
         errors = []
         for x_i, t_i in zip(X, t):
             y = softmax(np.inner(x_i, w))
@@ -60,8 +66,10 @@ if __name__ == '__main__':
             errors.append(error)
             assert not np.any(np.isnan(error))
             assert not np.any(np.isinf(error))
-            # print "error:", error
-        print "errors:", sum(errors)
+
+        total_error = sum(errors)
+        print "error:", total_error
+        error_history.append(total_error)
 
         # 正解クラスと予測クラスとの比較
         y = softmax(np.inner(X, w))
@@ -69,6 +77,20 @@ if __name__ == '__main__':
         num_correct = np.sum(t == predict_class)
         correct_percent = num_correct / float(num_examples) * 100
         print "correct_percent:", correct_percent
+        correct_percent_history.append(correct_percent)
+
+        # 学習曲線をプロットする
+        plt.plot(error_history)
+        plt.title("error")
+        plt.legend(["error"])
+        plt.show()
+        plt.plot(correct_percent_history)
+        plt.title("correct_percent")
+        plt.legend(["correct_percent"], loc="lower right")
+        plt.show()
+
+        if correct_percent == 100.0:
+            break
 
     # 予測クラスと真のクラスを表示する
 

@@ -15,6 +15,11 @@ def softmax(s):
     return exp_s / np.sum(exp_s)
 
 
+def onehot(k, num_classes=10):
+    t_onehot = np.zeros(num_classes)
+    t_onehot[k] = 1
+    return t_onehot
+
 # main文
 if __name__ == '__main__':
     digits = load_digits()

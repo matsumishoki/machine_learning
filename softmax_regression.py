@@ -54,10 +54,8 @@ if __name__ == '__main__':
             T = onehot(t_i)
             w_new = w - rho * np.expand_dims(y_i - T, 1) * x_i
             w = w_new
-        # print w_new
 
-
-        #負の対数尤度関数の値を表示する
+        # 負の対数尤度関数の値を表示する
         errors = []
         for x_i, t_i in zip(X, t):
             y = softmax(np.inner(x_i, w))
@@ -92,8 +90,11 @@ if __name__ == '__main__':
         if correct_percent == 100.0:
             break
 
+    # 予測クラスと真のクラスを表示する
+    print "predict_class:", predict_class
+    print "t:", t
 
-   # wの可視化
+    # wの可視化
     for w_k in w:
         w_true = w_k[0:64]  # w_trueとは結果をプロットするために定義したものである
         print "w_true:", w_true

@@ -10,8 +10,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.datasets import load_digits
 
-x_train, t_train, x_test, t_test = load_mnist.load_mnist()
-
 
 def softmax(s):
     exp_s = np.exp(s)
@@ -24,23 +22,36 @@ def onehot(k, num_classes=10):
     return t_onehot
 
 # main文
+if __name__ == '__main__':
+    x_train, t_train, x_test, t_test = load_mnist.load_mnist()
+    num_train, D = x_train.shape
+    num_test = len(x_test)
 
-# データ・セットの読み込み
+    print "x_train.shape:", x_train.shape
+    print "t_train.shape:", t_train.shape
+    print "x_test.shape:", x_test.shape
+    print "t_test.shape:", t_test.shape
 
-# ρを定義する(ρ=0.1で良いか判断し，収束しなければ値を変える．)
+    plt.matshow(x_train[0].reshape(28, 28), cmap=plt.cm.gray)
+    plt.show()
 
-# 収束するまで繰り返す
+    # データ・セットの読み込み
 
-# dim_features次元の重みをnum_classesクラス分用意する
+    # ρを定義する(ρ=0.1で良いか判断し，収束しなければ値を変える．)
+    rho = 0.5
 
-# 確率的勾配降下法
+    # 収束するまで繰り返す
 
-# 負の対数尤度関数の値を表示する
+    # dim_features次元の重みをnum_classesクラス分用意する
 
-# 正解クラスと予測クラスとの比較
+    # 確率的勾配降下法
 
-# 学習曲線をプロットする
+    # 負の対数尤度関数の値を表示する
 
-# 予測クラスと真のクラスを表示する
+    # 正解クラスと予測クラスとの比較
 
-# wの可視化
+    # 学習曲線をプロットする
+
+    # 予測クラスと真のクラスを表示する
+
+    # wの可視化

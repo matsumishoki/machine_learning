@@ -12,6 +12,17 @@ from sklearn.datasets import load_digits
 
 x_train, t_train, x_test, t_test = load_mnist.load_mnist()
 
+
+def softmax(s):
+    exp_s = np.exp(s)
+    return exp_s / np.sum(exp_s)
+
+
+def onehot(k, num_classes=10):
+    t_onehot = np.zeros(num_classes)
+    t_onehot[k] = 1
+    return t_onehot
+
 # main文
 
 # データ・セットの読み込み

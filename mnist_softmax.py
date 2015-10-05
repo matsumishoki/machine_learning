@@ -8,7 +8,6 @@ Created on Wed Sep 16 14:19:13 2015
 import load_mnist
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.datasets import load_digits
 
 
 def softmax(s):
@@ -36,16 +35,16 @@ if __name__ == '__main__':
     plt.show()
 
     # データ・セットの読み込み
-    X_raw = x_train / 16.0
+    X_raw = x_train / 256.0
     num_examples = len(X_raw)
     classes = np.unique(t_train)  # 定義されたクラスラベル
     num_classes = len(classes)  # クラス数
     x = X_raw[0]
-    X = np.hstack((X_raw, np.ones((num_examples, 1))))
-    dim_features = X.shape[-1]  # xの次元
+    X_train = np.hstack((X_raw, np.ones((num_examples, 1))))
+    dim_features = X_train.shape[-1]  # xの次元
 
     # learning_rateを定義する(learning_rate = 0.5で良いか判断し，収束しなければ値を変える．)
-    learning_rate = 0.5
+    learning_rate = 0.01
 
     # 収束するまで繰り返す
     max_iteration = 1000
@@ -54,13 +53,53 @@ if __name__ == '__main__':
     w = np.random.randn(num_classes, dim_features)
 
     # 確率的勾配降下法
+    error_history = []
+    correct_percent_history = []
+    for epoch in range(max_iteration):
+        for x_i, t_i in zip(X_train, t_train):
+            y_i = softmax(np.inner(w, x_i))
+            T = onehot(t_i)
+            w_new = w - learning_rate * np.expand_dims(y_i - T, 1) * x_i
+            w = w_new
 
     # 負の対数尤度関数の値を表示する
+        errors = []
+        for x_i, t_i in zip(X_train, t_train):
+            y = softmax(np.inner(x_i, w))
+            T = onehot(t_i)
+            error = np.sum(-(T*(np.log(y))))
+            errors.append(error)
+            assert not np.any(np.isnan(error))
+            assert not np.any(np.isinf(error))
+
+        total_error = sum(errors)
+        print "error:", total_error
+        error_history.append(total_error)
 
     # 正解クラスと予測クラスとの比較
+        y = softmax(np.inner(X_train, w))
+        predict_class = np.argmax(y, axis=1)
+        num_correct = np.sum(t_train == predict_class)
+        correct_percent = num_correct / float(num_examples) * 100
+        print "correct_percent:", correct_percent
+        print "epoch times:", epoch
+        correct_percent_history.append(correct_percent)
 
     # 学習曲線をプロットする
+        plt.plot(error_history)
+        plt.title("error")
+        plt.legend(["error"])
+        plt.show()
+        plt.plot(correct_percent_history)
+        plt.title("correct_percent")
+        plt.legend(["correct_percent"], loc="lower right")
+        plt.show()
+
+        if correct_percent == 100.0:
+            break
 
     # 予測クラスと真のクラスを表示する
+    print "predict_class:", predict_class
+    print "t:", t_train
 
     # wの可視化

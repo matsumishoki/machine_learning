@@ -35,7 +35,7 @@ if __name__ == '__main__':
     plt.show()
 
     # データ・セットの読み込み
-    X_raw = x_train / 256.0
+    X_raw = x_train / 16.0
     num_examples = len(X_raw)
     classes = np.unique(t_train)  # 定義されたクラスラベル
     num_classes = len(classes)  # クラス数
@@ -44,10 +44,10 @@ if __name__ == '__main__':
     dim_features = X_train.shape[-1]  # xの次元
 
     # learning_rateを定義する(learning_rate = 0.5で良いか判断し，収束しなければ値を変える．)
-    learning_rate = 0.01
+    learning_rate = 0.5
 
     # 収束するまで繰り返す
-    max_iteration = 1000
+    max_iteration = 10000
 
     # dim_features次元の重みをnum_classesクラス分用意する
     w = np.random.randn(num_classes, dim_features)

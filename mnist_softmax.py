@@ -36,11 +36,19 @@ if __name__ == '__main__':
     plt.show()
 
     # データ・セットの読み込み
+    X_raw = x_train / 16.0
+    num_examples = len(X_raw)
+    classes = np.unique(t_train)  # 定義されたクラスラベル
+    num_classes = len(classes)  # クラス数
+    x = X_raw[0]
+    X = np.hstack((X_raw, np.ones((num_examples, 1))))
+    dim_features = X.shape[-1]  # xの次元
 
     # learning_rateを定義する(learning_rate = 0.5で良いか判断し，収束しなければ値を変える．)
     learning_rate = 0.5
 
     # 収束するまで繰り返す
+    max_iteration = 1000
 
     # dim_features次元の重みをnum_classesクラス分用意する
 

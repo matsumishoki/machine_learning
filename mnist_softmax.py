@@ -51,6 +51,7 @@ if __name__ == '__main__':
     max_iteration = 1000
 
     # dim_features次元の重みをnum_classesクラス分用意する
+    w = np.random.randn(num_classes, dim_features)
 
     # 確率的勾配降下法
 

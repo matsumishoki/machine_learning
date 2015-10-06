@@ -35,7 +35,7 @@ if __name__ == '__main__':
     plt.show()
 
     # データ・セットの読み込み
-    X_raw = x_train / 16.0
+    X_raw = x_train
     num_examples = len(X_raw)
     classes = np.unique(t_train)  # 定義されたクラスラベル
     num_classes = len(classes)  # クラス数
@@ -44,13 +44,15 @@ if __name__ == '__main__':
     dim_features = X_train.shape[-1]  # xの次元
 
     # learning_rateを定義する(learning_rate = 0.5で良いか判断し，収束しなければ値を変える．)
-    learning_rate = 0.5
+    learning_rate = 0.000012
 
     # 収束するまで繰り返す
     max_iteration = 10000
 
     # dim_features次元の重みをnum_classesクラス分用意する
-    w = np.random.randn(num_classes, dim_features)
+
+    w_scale = 0.001
+    w = w_scale * np.random.randn(num_classes, dim_features)
 
     # 確率的勾配降下法
     error_history = []
@@ -72,7 +74,7 @@ if __name__ == '__main__':
             assert not np.any(np.isnan(error))
             assert not np.any(np.isinf(error))
 
-        total_error = sum(errors)
+        total_error = np.mean(errors)
         print "error:", total_error
         error_history.append(total_error)
 
@@ -83,16 +85,19 @@ if __name__ == '__main__':
         correct_percent = num_correct / float(num_examples) * 100
         print "correct_percent:", correct_percent
         print "epoch times:", epoch
+        print "|w|:", np.linalg.norm(w)
         correct_percent_history.append(correct_percent)
 
     # 学習曲線をプロットする
         plt.plot(error_history)
         plt.title("error")
         plt.legend(["error"])
+        plt.grid()
         plt.show()
         plt.plot(correct_percent_history)
         plt.title("correct_percent")
         plt.legend(["correct_percent"], loc="lower right")
+        plt.grid()
         plt.show()
 
         if correct_percent == 100.0:

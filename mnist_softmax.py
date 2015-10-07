@@ -8,6 +8,7 @@ Created on Wed Sep 16 14:19:13 2015
 import load_mnist
 import numpy as np
 import matplotlib.pyplot as plt
+import random
 
 
 def softmax(s):
@@ -44,10 +45,10 @@ if __name__ == '__main__':
     dim_features = X_train.shape[-1]  # xの次元
 
     # learning_rateを定義する(learning_rate = 0.5で良いか判断し，収束しなければ値を変える．)
-    learning_rate = 0.000012
+    learning_rate = 0.0019
 
     # 収束するまで繰り返す
-    max_iteration = 10000
+    max_iteration = 100000
 
     # dim_features次元の重みをnum_classesクラス分用意する
 
@@ -58,7 +59,10 @@ if __name__ == '__main__':
     error_history = []
     correct_percent_history = []
     for epoch in range(max_iteration):
-        for x_i, t_i in zip(X_train, t_train):
+        perm = np.random.permutation(num_train)
+        for i in perm:
+            x_i = X_train[i]
+            t_i = t_train[i]
             y_i = softmax(np.inner(w, x_i))
             T = onehot(t_i)
             w_new = w - learning_rate * np.expand_dims(y_i - T, 1) * x_i

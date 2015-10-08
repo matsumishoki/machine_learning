@@ -8,7 +8,6 @@ Created on Wed Sep 16 14:19:13 2015
 import load_mnist
 import numpy as np
 import matplotlib.pyplot as plt
-import random
 
 
 def softmax(s):
@@ -35,7 +34,7 @@ if __name__ == '__main__':
     plt.matshow(x_train[0].reshape(28, 28), cmap=plt.cm.gray)
     plt.show()
 
-    # データ・セットの読み込み
+    # 訓練データ・セットの読み込み
     X_raw = x_train
     num_examples = len(X_raw)
     classes = np.unique(t_train)  # 定義されたクラスラベル
@@ -43,6 +42,13 @@ if __name__ == '__main__':
     x = X_raw[0]
     X_train = np.hstack((X_raw, np.ones((num_examples, 1))))
     dim_features = X_train.shape[-1]  # xの次元
+
+    # テストデータ・セットの読み込み
+    num_test_examples = len(x_test)
+    test_classes = np.unique(t_test)
+    num_test_classes = len(test_classes)
+    X_test = np.hstack((x_test, np.ones((num_test_examples, 1))))
+    dim_features = X_test.shape[-1]  # xの次元
 
     # learning_rateを定義する(learning_rate = 0.5で良いか判断し，収束しなければ値を変える．)
     learning_rate = 0.0019
@@ -104,8 +110,17 @@ if __name__ == '__main__':
         plt.grid()
         plt.show()
 
-        if correct_percent == 100.0:
+        if epoch == 100:
             break
+
+    # 訓練データセットとテストデータセットとの比較
+    y_test = softmax(np.inner(X_test, w))
+    predict_class_test = np.argmax(y_test, axis=1)
+    num_correct_test = np.sum(t_test == predict_class_test)
+    correct_softmax_percent = num_correct_test / float(num_test_examples) * 100
+    print "correct_softmax_percent:", correct_softmax_percent
+    print "finish epoch times:", epoch
+    print "|w|:", np.linalg.norm(w)
 
     # 予測クラスと真のクラスを表示する
     print "predict_class:", predict_class

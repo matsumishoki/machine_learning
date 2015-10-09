@@ -121,6 +121,14 @@ if __name__ == '__main__':
         print "|w|:", np.linalg.norm(w)
         correct_percent_history.append(correct_percent)
 
+        # 評価データセットと比較する
+        y_valid = softmax(np.inner(X_valid, w))
+        predict_class_valid = np.argmax(y_valid, axis=1)
+        num_correct_valid = np.sum(t_valid == predict_class_valid)
+        correct_evaluation_percent = num_correct_valid / float(num_valid) * 100
+        print "correct_evaluation_percent:", correct_evaluation_percent
+        print "|w|:", np.linalg.norm(w)
+
         # 学習曲線をプロットする
         plt.plot(error_history)
         plt.title("error")
@@ -136,7 +144,7 @@ if __name__ == '__main__':
         if epoch == 1:
             break
 
-    # 訓練データセットとテストデータセットとの比較
+    # 学習済みのモデルでテストセットを評価して正解率を求める
     y_test = softmax(np.inner(X_test, w))
     predict_class_test = np.argmax(y_test, axis=1)
     num_correct_test = np.sum(t_test == predict_class_test)

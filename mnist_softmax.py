@@ -141,7 +141,7 @@ if __name__ == '__main__':
         plt.grid()
         plt.show()
 
-        if epoch == 1:
+        if correct_evaluation_percent >= 92.5:
             break
 
     # 学習済みのモデルでテストセットを評価して正解率を求める

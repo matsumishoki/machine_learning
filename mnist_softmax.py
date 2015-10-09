@@ -33,7 +33,7 @@ if __name__ == '__main__':
     print "t_train.shape:", t_train.shape
 
     # 60000ある訓練データセットを50000と10000の評価のデータセットに分割する
-    v = train_test_split(x_train, t_train, test_size=10000, random_state=42)
+    v = train_test_split(x_train, t_train, test_size=30000, random_state=100)
     x_train, x_valid, t_train, t_valid = v
 
     num_train, D = x_train.shape
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     dim_features = X_test.shape[-1]  # xの次元
 
     # learning_rateを定義する(learning_rate = 0.5で良いか判断し，収束しなければ値を変える．)
-    learning_rate = 0.0019
+    learning_rate = 0.000015
 
     # 収束するまで繰り返す
     max_iteration = 100000
@@ -81,6 +81,9 @@ if __name__ == '__main__':
     # 確率的勾配降下法
     error_history = []
     correct_percent_history = []
+    error_valid_history = []
+    correct_valid_percent_history = []
+
     for epoch in range(max_iteration):
         print "epoch:", epoch
 
@@ -98,7 +101,7 @@ if __name__ == '__main__':
         time_elapsed = time_finish - time_start
         print "time_elapsed:", time_elapsed
 
-        # 負の対数尤度関数の値を表示する
+        # 訓練セットの負の対数尤度関数の値を表示する
         errors = []
         for x_i, t_i in zip(X_train, t_train):
             y = softmax(np.inner(x_i, w))
@@ -112,7 +115,21 @@ if __name__ == '__main__':
         print "error:", total_error
         error_history.append(total_error)
 
-        # 正解クラスと予測クラスとの比較
+        # 検証セットの負の対数尤度関数の値を表示する
+        valid_errors = []
+        for x_vi, t_vi in zip(X_valid, t_valid):
+            y_v = softmax(np.inner(x_vi, w))
+            T = onehot(t_vi)
+            valid_error = np.sum(-(T*(np.log(y_v))))
+            valid_errors.append(valid_error)
+            assert not np.any(np.isnan(valid_error))
+            assert not np.any(np.isinf(valid_error))
+
+        total_valid_error = np.mean(valid_errors)
+        print "valid_error:", total_valid_error
+        error_valid_history.append(total_valid_error)
+
+        # 学習中のモデルで訓練セットを評価して正解率を求める
         y = softmax(np.inner(X_train, w))
         predict_class = np.argmax(y, axis=1)
         num_correct = np.sum(t_train == predict_class)
@@ -121,27 +138,34 @@ if __name__ == '__main__':
         print "|w|:", np.linalg.norm(w)
         correct_percent_history.append(correct_percent)
 
-        # 評価データセットと比較する
+        # 学習中のモデルで検証セットを評価して正解率を求める
         y_valid = softmax(np.inner(X_valid, w))
         predict_class_valid = np.argmax(y_valid, axis=1)
         num_correct_valid = np.sum(t_valid == predict_class_valid)
-        correct_evaluation_percent = num_correct_valid / float(num_valid) * 100
-        print "correct_evaluation_percent:", correct_evaluation_percent
+        correct_valid_percent = num_correct_valid / float(num_valid) * 100
+        print "correct_valid_percent:", correct_valid_percent
         print "|w|:", np.linalg.norm(w)
+        correct_valid_percent_history.append(correct_valid_percent)
 
         # 学習曲線をプロットする
-        plt.plot(error_history)
+        plt.plot(error_history, label="error")
+        plt.plot(error_valid_history, label="valid_error")
         plt.title("error")
-        plt.legend(["error"])
-        plt.grid()
-        plt.show()
-        plt.plot(correct_percent_history)
-        plt.title("correct_percent")
-        plt.legend(["correct_percent"], loc="lower right")
+        plt.legend(['error', 'valid_error'])
+        # plt.legend(["error"])
         plt.grid()
         plt.show()
 
-        if correct_evaluation_percent >= 92.5:
+        plt.plot(correct_percent_history, label="correct_percent")
+        plt.plot(correct_valid_percent_history, label="correct_valid_percent")
+        plt.legend(loc="lower right")
+        plt.title("correct_percent")
+        # plt.legend(["correct_percent"], loc="lower right")
+        # plt.legend(["correct_valid_percent"], loc="lower left")
+        plt.grid()
+        plt.show()
+
+        if correct_valid_percent >= 92.5:
             break
 
     # 学習済みのモデルでテストセットを評価して正解率を求める

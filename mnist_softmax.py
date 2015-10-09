@@ -7,7 +7,9 @@ Created on Wed Sep 16 14:19:13 2015
 
 import load_mnist
 import numpy as np
+from sklearn.cross_validation import train_test_split
 import matplotlib.pyplot as plt
+import time
 
 
 def softmax(s):
@@ -23,16 +25,27 @@ def onehot(k, num_classes=10):
 # main文
 if __name__ == '__main__':
     x_train, t_train, x_test, t_test = load_mnist.load_mnist()
+
+    plt.matshow(x_train[0].reshape(28, 28), cmap=plt.cm.gray)
+    plt.show()
+
+    print "x_train.shape:", x_train.shape
+    print "t_train.shape:", t_train.shape
+
+    # 60000ある訓練データセットを50000と10000の評価のデータセットに分割する
+    v = train_test_split(x_train, t_train, test_size=10000, random_state=42)
+    x_train, x_valid, t_train, t_valid = v
+
     num_train, D = x_train.shape
+    num_valid = len(x_valid)
     num_test = len(x_test)
 
     print "x_train.shape:", x_train.shape
     print "t_train.shape:", t_train.shape
+    print "x_valid.shape:", x_valid.shape
+    print "t_valid.shape:", t_valid.shape
     print "x_test.shape:", x_test.shape
     print "t_test.shape:", t_test.shape
-
-    plt.matshow(x_train[0].reshape(28, 28), cmap=plt.cm.gray)
-    plt.show()
 
     # 訓練データ・セットの読み込み
     X_raw = x_train
@@ -65,6 +78,9 @@ if __name__ == '__main__':
     error_history = []
     correct_percent_history = []
     for epoch in range(max_iteration):
+        print "epoch:", epoch
+
+        time_start = time.time()
         perm = np.random.permutation(num_train)
         for i in perm:
             x_i = X_train[i]
@@ -74,7 +90,11 @@ if __name__ == '__main__':
             w_new = w - learning_rate * np.expand_dims(y_i - T, 1) * x_i
             w = w_new
 
-    # 負の対数尤度関数の値を表示する
+        time_finish = time.time()
+        time_elapsed = time_finish - time_start
+        print "time_elapsed:", time_elapsed
+
+        # 負の対数尤度関数の値を表示する
         errors = []
         for x_i, t_i in zip(X_train, t_train):
             y = softmax(np.inner(x_i, w))
@@ -88,17 +108,16 @@ if __name__ == '__main__':
         print "error:", total_error
         error_history.append(total_error)
 
-    # 正解クラスと予測クラスとの比較
+        # 正解クラスと予測クラスとの比較
         y = softmax(np.inner(X_train, w))
         predict_class = np.argmax(y, axis=1)
         num_correct = np.sum(t_train == predict_class)
         correct_percent = num_correct / float(num_examples) * 100
         print "correct_percent:", correct_percent
-        print "epoch times:", epoch
         print "|w|:", np.linalg.norm(w)
         correct_percent_history.append(correct_percent)
 
-    # 学習曲線をプロットする
+        # 学習曲線をプロットする
         plt.plot(error_history)
         plt.title("error")
         plt.legend(["error"])
@@ -110,7 +129,7 @@ if __name__ == '__main__':
         plt.grid()
         plt.show()
 
-        if epoch == 100:
+        if epoch == 1:
             break
 
     # 訓練データセットとテストデータセットとの比較
@@ -119,7 +138,7 @@ if __name__ == '__main__':
     num_correct_test = np.sum(t_test == predict_class_test)
     correct_softmax_percent = num_correct_test / float(num_test_examples) * 100
     print "correct_softmax_percent:", correct_softmax_percent
-    print "finish epoch times:", epoch
+    print "finish epoch:", epoch
     print "|w|:", np.linalg.norm(w)
 
     # 予測クラスと真のクラスを表示する

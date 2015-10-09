@@ -48,19 +48,23 @@ if __name__ == '__main__':
     print "t_test.shape:", t_test.shape
 
     # 訓練データ・セットの読み込み
-    X_raw = x_train
-    num_examples = len(X_raw)
+    num_examples = len(x_train)
     classes = np.unique(t_train)  # 定義されたクラスラベル
     num_classes = len(classes)  # クラス数
-    x = X_raw[0]
-    X_train = np.hstack((X_raw, np.ones((num_examples, 1))))
+    x = x_train[0]
+    X_train = np.hstack((x_train, np.ones((num_examples, 1))))
     dim_features = X_train.shape[-1]  # xの次元
 
+    # 評価のデータセットの読み込み
+    valid_classes = np.unique(t_valid)  # 定義されたクラスラベル
+    num_valid_classes = len(valid_classes)
+    X_valid = np.hstack((x_valid, np.ones((num_valid, 1))))
+    dim_features = X_valid.shape[-1]  # xの次元
+
     # テストデータ・セットの読み込み
-    num_test_examples = len(x_test)
-    test_classes = np.unique(t_test)
+    test_classes = np.unique(t_test)  # 定義されたクラスラベル
     num_test_classes = len(test_classes)
-    X_test = np.hstack((x_test, np.ones((num_test_examples, 1))))
+    X_test = np.hstack((x_test, np.ones((num_test, 1))))
     dim_features = X_test.shape[-1]  # xの次元
 
     # learning_rateを定義する(learning_rate = 0.5で良いか判断し，収束しなければ値を変える．)
@@ -136,7 +140,7 @@ if __name__ == '__main__':
     y_test = softmax(np.inner(X_test, w))
     predict_class_test = np.argmax(y_test, axis=1)
     num_correct_test = np.sum(t_test == predict_class_test)
-    correct_softmax_percent = num_correct_test / float(num_test_examples) * 100
+    correct_softmax_percent = num_correct_test / float(num_test) * 100
     print "correct_softmax_percent:", correct_softmax_percent
     print "finish epoch:", epoch
     print "|w|:", np.linalg.norm(w)

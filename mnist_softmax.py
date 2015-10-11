@@ -33,7 +33,7 @@ if __name__ == '__main__':
     print "t_train.shape:", t_train.shape
 
     # 60000ある訓練データセットを50000と10000の評価のデータセットに分割する
-    v = train_test_split(x_train, t_train, test_size=15000, random_state=100)
+    v = train_test_split(x_train, t_train, test_size=0.1, random_state=100)
     x_train, x_valid, t_train, t_valid = v
 
     num_train, D = x_train.shape
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     dim_features = X_test.shape[-1]  # xの次元
 
     # learning_rateを定義する(learning_rate = 0.5で良いか判断し，収束しなければ値を変える．)
-    learning_rate = 0.00001
+    learning_rate = 0.001
 
     # 収束するまで繰り返す
     max_iteration = 100000
@@ -86,7 +86,7 @@ if __name__ == '__main__':
 
     w_best = 0
     correct_valid_percent_best = 0
-    max_epoch = 100
+    max_epoch = 200
     total_valid_error_best = 10
 
     for epoch in range(max_iteration):
@@ -174,9 +174,8 @@ if __name__ == '__main__':
             w_best = w
             total_valid_error_best = total_valid_error
             print "valid_error_best:", total_valid_error_best
-            if correct_valid_percent >= correct_valid_percent_best:
-                correct_valid_percent_best = correct_valid_percent
-                print "correct_valid_percent_best:", correct_valid_percent_best
+            correct_valid_percent_best = correct_valid_percent
+            print "correct_valid_percent_best:", correct_valid_percent_best
 
         if epoch == max_epoch:
             break
@@ -185,9 +184,12 @@ if __name__ == '__main__':
     y_test = softmax(np.inner(X_test, w_best))
     predict_class_test = np.argmax(y_test, axis=1)
     num_correct_test = np.sum(t_test == predict_class_test)
-    correct_softmax_percent = num_correct_test / float(num_test) * 100
-    print "correct_softmax_percent:", correct_softmax_percent
+    correct_test_percent = num_correct_test / float(num_test) * 100
+    print "learning_rate:", learning_rate
+    print "valid_error_best:", total_valid_error_best
+    print "correct_valid_percent_best:", correct_valid_percent_best
     print "finish epoch:", epoch
+    print "correct_test_percent:", correct_test_percent
 
     # 予測クラスと真のクラスを表示する
     print "predict_class:", predict_class

@@ -33,7 +33,7 @@ if __name__ == '__main__':
     print "t_train.shape:", t_train.shape
 
     # 60000ある訓練データセットを50000と10000の評価のデータセットに分割する
-    v = train_test_split(x_train, t_train, test_size=30000, random_state=100)
+    v = train_test_split(x_train, t_train, test_size=15000, random_state=100)
     x_train, x_valid, t_train, t_valid = v
 
     num_train, D = x_train.shape
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     dim_features = X_test.shape[-1]  # xの次元
 
     # learning_rateを定義する(learning_rate = 0.5で良いか判断し，収束しなければ値を変える．)
-    learning_rate = 0.000015
+    learning_rate = 0.00001
 
     # 収束するまで繰り返す
     max_iteration = 100000
@@ -83,7 +83,8 @@ if __name__ == '__main__':
     correct_percent_history = []
     error_valid_history = []
     correct_valid_percent_history = []
-
+    w_best = 0
+    correct_valid_percent_bset = 0
     for epoch in range(max_iteration):
         print "epoch:", epoch
 
@@ -135,7 +136,6 @@ if __name__ == '__main__':
         num_correct = np.sum(t_train == predict_class)
         correct_percent = num_correct / float(num_examples) * 100
         print "correct_percent:", correct_percent
-        print "|w|:", np.linalg.norm(w)
         correct_percent_history.append(correct_percent)
 
         # 学習中のモデルで検証セットを評価して正解率を求める
@@ -165,20 +165,27 @@ if __name__ == '__main__':
         plt.grid()
         plt.show()
 
-        if correct_valid_percent >= 92.5:
+        # 検証データの正解率が良ければwの値を保存し，wの最善値を格納する
+        if correct_valid_percent >= correct_valid_percent_bset:
+            correct_valid_percent_bset = correct_valid_percent
+            w_best = w
+
+        if epoch == 100:
             break
 
     # 学習済みのモデルでテストセットを評価して正解率を求める
-    y_test = softmax(np.inner(X_test, w))
+    y_test = softmax(np.inner(X_test, w_best))
     predict_class_test = np.argmax(y_test, axis=1)
     num_correct_test = np.sum(t_test == predict_class_test)
     correct_softmax_percent = num_correct_test / float(num_test) * 100
     print "correct_softmax_percent:", correct_softmax_percent
     print "finish epoch:", epoch
-    print "|w|:", np.linalg.norm(w)
+    print "correct_valid_percent_bset:", correct_valid_percent_bset
 
     # 予測クラスと真のクラスを表示する
     print "predict_class:", predict_class
     print "t:", t_train
 
     # wの可視化
+    print "|w_best|:", np.linalg.norm(w_best)
+    print "w_best:", w_best

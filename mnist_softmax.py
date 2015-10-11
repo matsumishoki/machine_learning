@@ -83,8 +83,12 @@ if __name__ == '__main__':
     correct_percent_history = []
     error_valid_history = []
     correct_valid_percent_history = []
+
     w_best = 0
-    correct_valid_percent_bset = 0
+    correct_valid_percent_best = 0
+    max_epoch = 100
+    total_valid_error_best = 10
+
     for epoch in range(max_iteration):
         print "epoch:", epoch
 
@@ -165,12 +169,16 @@ if __name__ == '__main__':
         plt.grid()
         plt.show()
 
-        # 検証データの正解率が良ければwの値を保存し，wの最善値を格納する
-        if correct_valid_percent >= correct_valid_percent_bset:
-            correct_valid_percent_bset = correct_valid_percent
+        # 検証データのerror率が良ければwの値を保存し，wの最善値を格納する
+        if total_valid_error <= total_valid_error_best:
             w_best = w
+            total_valid_error_best = total_valid_error
+            print "valid_error_best:", total_valid_error_best
+            if correct_valid_percent >= correct_valid_percent_best:
+                correct_valid_percent_best = correct_valid_percent
+                print "correct_valid_percent_best:", correct_valid_percent_best
 
-        if epoch == 100:
+        if epoch == max_epoch:
             break
 
     # 学習済みのモデルでテストセットを評価して正解率を求める
@@ -180,7 +188,6 @@ if __name__ == '__main__':
     correct_softmax_percent = num_correct_test / float(num_test) * 100
     print "correct_softmax_percent:", correct_softmax_percent
     print "finish epoch:", epoch
-    print "correct_valid_percent_bset:", correct_valid_percent_bset
 
     # 予測クラスと真のクラスを表示する
     print "predict_class:", predict_class

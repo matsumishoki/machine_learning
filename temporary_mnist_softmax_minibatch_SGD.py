@@ -13,8 +13,13 @@ import time
 
 
 def softmax(s):
+    len(s.shape)
     exp_s = np.exp(s)
-    return exp_s / np.sum(exp_s)
+    if len(s.shape) == 1:
+        return exp_s / np.sum(exp_s)
+
+    if len(s.shape) == 2:
+        return exp_s / np.sum(exp_s, axis=1, keepdims=True)
 
 
 def onehot(k, num_classes=10):
@@ -86,7 +91,7 @@ if __name__ == '__main__':
 
     w_best = 0
     correct_valid_percent_best = 0
-    max_epoch = 200
+    max_epoch = 2
     total_valid_error_best = 10
 
     for epoch in range(max_iteration):

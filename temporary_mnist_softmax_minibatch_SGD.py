@@ -91,7 +91,7 @@ if __name__ == '__main__':
 
     w_best = 0
     correct_valid_percent_best = 0
-    max_epoch = 2
+    max_epoch = 100
     total_valid_error_best = 10
 
     for epoch in range(max_iteration):
@@ -181,6 +181,9 @@ if __name__ == '__main__':
             print "valid_error_best:", total_valid_error_best
             correct_valid_percent_best = correct_valid_percent
             print "correct_valid_percent_best:", correct_valid_percent_best
+            epoch_best = epoch
+            print "epoch_best:", epoch_best
+            print "valid_error_best:", total_valid_error_best
 
         if epoch == max_epoch:
             break
@@ -193,6 +196,7 @@ if __name__ == '__main__':
     print "learning_rate:", learning_rate
     print "valid_error_best:", total_valid_error_best
     print "correct_valid_percent_best:", correct_valid_percent_best
+    print "epoch_best:", epoch_best
     print "finish epoch:", epoch
     print "correct_test_percent:", correct_test_percent
 
@@ -208,5 +212,3 @@ if __name__ == '__main__':
         # print "w_true:", w_true
         plt.matshow(w_true.reshape(28, 28), cmap=plt.cm.gray)
         plt.show()
-
-

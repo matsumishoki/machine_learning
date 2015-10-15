@@ -11,8 +11,13 @@ from sklearn.datasets import load_digits
 
 
 def softmax(s):
+    len(s.shape)
     exp_s = np.exp(s)
-    return exp_s / np.sum(exp_s, axis=1, keepdims=True)
+    if len(s.shape) == 1:
+        return exp_s / np.sum(exp_s)
+
+    if len(s.shape) == 2:
+        return exp_s / np.sum(exp_s, axis=1, keepdims=True)
 
 
 x = np.array([1, 2, 3])

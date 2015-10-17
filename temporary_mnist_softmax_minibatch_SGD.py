@@ -23,11 +23,9 @@ def softmax(s):
 
 
 def onehot(k, num_classes=10):
-    num_examples = len(k)
-    t_onehot = np.zeros((num_examples, num_classes))
-    t_onehot[np.arange(num_examples), k] = 1
+    t_onehot = np.zeros(num_classes)
+    t_onehot[k] = 1
     return t_onehot
-
 
 # main文
 if __name__ == '__main__':
@@ -67,7 +65,6 @@ if __name__ == '__main__':
     num_valid_classes = len(valid_classes)
     X_valid = np.hstack((x_valid, np.ones((num_valid, 1))))
     dim_features = X_valid.shape[-1]  # xの次元
-
     # テストデータ・セットの読み込み
     test_classes = np.unique(t_test)  # 定義されたクラスラベル
     num_test_classes = len(test_classes)
@@ -96,6 +93,8 @@ if __name__ == '__main__':
     max_epoch = 2
     total_valid_error_best = 10
 
+    num_batches = 200
+
     for epoch in range(max_iteration):
         print "epoch:", epoch
 
@@ -103,21 +102,21 @@ if __name__ == '__main__':
         perm = np.random.permutation(num_train)
         minibatch_perm = perm[:200]
         minibatch_X_train = X_train[perm[:200]]
-#        for i in perm:
-#            x_i = X_train[i]
-#            t_i = t_train[i]
-#            y_i = softmax(np.inner(w, x_i))
-#            T = onehot(t_i)
-#            w_new = w - learning_rate * np.expand_dims(y_i - T, 1) * x_i
-#            w = w_new
-
-        for minibatch_i in minibatch_perm:
-            x_i = X_train[:minibatch_i]
-            t_i = t_train[:minibatch_i]
+        for i in perm:
+            x_i = X_train[i]
+            t_i = t_train[i]
             y_i = softmax(np.inner(w, x_i))
             T = onehot(t_i)
             w_new = w - learning_rate * np.expand_dims(y_i - T, 1) * x_i
             w = w_new
+
+#        for batch_indexes in np.array_split(perm, num_batches):
+#            x_i = X_train[batch_indexes]
+#            t_i = t_train[batch_indexes]
+#            y_i = softmax(np.inner(w, x_i))
+#            T = onehot(t_i)
+#            w_new = w - learning_rate * np.expand_dims(y_i - T, 1) * x_i
+#            w = w_new
 
         time_finish = time.time()
         time_elapsed = time_finish - time_start

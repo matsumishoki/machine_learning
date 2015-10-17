@@ -23,9 +23,11 @@ def softmax(s):
 
 
 def onehot(k, num_classes=10):
-    t_onehot = np.zeros(num_classes)
-    t_onehot[k] = 1
+    num_examples = len(k)
+    t_onehot = np.zeros((num_examples, num_classes))
+    t_onehot[np.arange(num_examples), k] = 1
     return t_onehot
+
 
 # main文
 if __name__ == '__main__':
@@ -91,7 +93,7 @@ if __name__ == '__main__':
 
     w_best = 0
     correct_valid_percent_best = 0
-    max_epoch = 100
+    max_epoch = 2
     total_valid_error_best = 10
 
     for epoch in range(max_iteration):
@@ -99,9 +101,19 @@ if __name__ == '__main__':
 
         time_start = time.time()
         perm = np.random.permutation(num_train)
-        for i in perm:
-            x_i = X_train[i]
-            t_i = t_train[i]
+        minibatch_perm = perm[:200]
+        minibatch_X_train = X_train[perm[:200]]
+#        for i in perm:
+#            x_i = X_train[i]
+#            t_i = t_train[i]
+#            y_i = softmax(np.inner(w, x_i))
+#            T = onehot(t_i)
+#            w_new = w - learning_rate * np.expand_dims(y_i - T, 1) * x_i
+#            w = w_new
+
+        for minibatch_i in minibatch_perm:
+            x_i = X_train[:minibatch_i]
+            t_i = t_train[:minibatch_i]
             y_i = softmax(np.inner(w, x_i))
             T = onehot(t_i)
             w_new = w - learning_rate * np.expand_dims(y_i - T, 1) * x_i

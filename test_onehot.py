@@ -15,3 +15,8 @@ def onehot(k, num_classes=10):
     t_onehot = np.zeros((num_examples, num_classes))
     t_onehot[np.arange(num_examples), k] = 1
     return t_onehot
+
+t = np.random.choice(10, 200)
+T = onehot(t).T
+print onehot(t).shape
+print T.shape

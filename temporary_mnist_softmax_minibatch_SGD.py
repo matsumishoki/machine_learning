@@ -83,7 +83,7 @@ if __name__ == '__main__':
     learning_rate = 0.001
 
     # 収束するまで繰り返す
-    max_iteration = 200
+    max_iteration = 100
 
     # dim_features次元の重みをnum_classesクラス分用意する
 
@@ -99,7 +99,7 @@ if __name__ == '__main__':
     w_best = 0
     correct_valid_percent_best = 0
     total_valid_error_best = 10
-    batch_size = 200                      # ミニバッチ1つあたりのサンプル数
+    batch_size = 300                      # ミニバッチ1つあたりのサンプル数
     num_batches = num_train / batch_size  # ミニバッチの個数
     num_valid_batches = num_valid / batch_size
 
@@ -212,6 +212,7 @@ if __name__ == '__main__':
     predict_class_test = np.argmax(y_test, axis=1)
     num_correct_test = np.sum(t_test == predict_class_test)
     correct_test_percent = num_correct_test / float(num_test) * 100
+    print "batch_size:", batch_size
     print "learning_rate:", learning_rate
     print "valid_error_best:", total_valid_error_best
     print "correct_valid_percent_best:", correct_valid_percent_best

@@ -23,14 +23,22 @@ def softmax(s):
 
 
 def onehot(k, num_classes=10):
-    t_onehot = np.zeros(num_classes)
-    t_onehot[k] = 1
+    assert isinstance(k, np.ndarray)
+    assert k.ndim == 1
+    assert k.dtype == np.int, k.dtype
+
+    num_examples = len(k)
+    t_onehot = np.zeros((num_examples, num_classes))
+    t_onehot[np.arange(num_examples), k] = 1
     return t_onehot
+
 
 # main文
 if __name__ == '__main__':
     x_train, t_train, x_test, t_test = load_mnist.load_mnist()
-
+    t_train = t_train.astype(np.int32)
+    t_test = t_test.astype(np.int32)
+    # t_train = map(int, t_train)
     plt.matshow(x_train[0].reshape(28, 28), cmap=plt.cm.gray)
     plt.show()
 
@@ -75,7 +83,7 @@ if __name__ == '__main__':
     learning_rate = 0.001
 
     # 収束するまで繰り返す
-    max_iteration = 100000
+    max_iteration = 200
 
     # dim_features次元の重みをnum_classesクラス分用意する
 
@@ -90,33 +98,31 @@ if __name__ == '__main__':
 
     w_best = 0
     correct_valid_percent_best = 0
-    max_epoch = 2
     total_valid_error_best = 10
-
-    num_batches = 200
+    batch_size = 200                      # ミニバッチ1つあたりのサンプル数
+    num_batches = num_train / batch_size  # ミニバッチの個数
+    num_valid_batches = num_valid / batch_size
 
     for epoch in range(max_iteration):
         print "epoch:", epoch
 
         time_start = time.time()
         perm = np.random.permutation(num_train)
-        minibatch_perm = perm[:200]
-        minibatch_X_train = X_train[perm[:200]]
-        for i in perm:
-            x_i = X_train[i]
-            t_i = t_train[i]
-            y_i = softmax(np.inner(w, x_i))
-            T = onehot(t_i)
-            w_new = w - learning_rate * np.expand_dims(y_i - T, 1) * x_i
-            w = w_new
-
-#        for batch_indexes in np.array_split(perm, num_batches):
-#            x_i = X_train[batch_indexes]
-#            t_i = t_train[batch_indexes]
+#        for i in perm:
+#            x_i = X_train[i]
+#            t_i = t_train[i]
 #            y_i = softmax(np.inner(w, x_i))
 #            T = onehot(t_i)
 #            w_new = w - learning_rate * np.expand_dims(y_i - T, 1) * x_i
 #            w = w_new
+        for batch_indexes in np.array_split(perm, num_batches):
+            X_batch = X_train[batch_indexes]
+            t_batch = t_train[batch_indexes]
+            y_batch = softmax(np.inner(X_batch, w))
+            T_batch = onehot(t_batch)
+            grad_w = np.dot((y_batch - T_batch).T, X_batch)
+            w_new = w - learning_rate * grad_w
+            w = w_new
 
         time_finish = time.time()
         time_elapsed = time_finish - time_start
@@ -124,10 +130,12 @@ if __name__ == '__main__':
 
         # 訓練セットの負の対数尤度関数の値を表示する
         errors = []
-        for x_i, t_i in zip(X_train, t_train):
-            y = softmax(np.inner(x_i, w))
-            T = onehot(t_i)
-            error = np.sum(-(T*(np.log(y))))
+        for batch_indexes in np.array_split(np.arange(num_train), num_batches):
+            X_batch = X_train[batch_indexes]
+            t_batch = t_train[batch_indexes]
+            y_batch = softmax(np.inner(X_batch, w))
+            T_batch = onehot(t_batch)
+            error = np.sum(-(T_batch*(np.log(y_batch)))) / batch_size
             errors.append(error)
             assert not np.any(np.isnan(error))
             assert not np.any(np.isinf(error))
@@ -138,10 +146,13 @@ if __name__ == '__main__':
 
         # 検証セットの負の対数尤度関数の値を表示する
         valid_errors = []
-        for x_vi, t_vi in zip(X_valid, t_valid):
-            y_v = softmax(np.inner(x_vi, w))
-            T = onehot(t_vi)
-            valid_error = np.sum(-(T*(np.log(y_v))))
+        for batch_indexes in np.array_split(np.arange(num_valid),
+                                            num_valid_batches):
+            X_batch = X_valid[batch_indexes]
+            t_batch = t_valid[batch_indexes]
+            y_batch = softmax(np.inner(X_batch, w))
+            T_batch = onehot(t_batch)
+            valid_error = np.sum(-(T_batch*(np.log(y_batch)))) / batch_size
             valid_errors.append(valid_error)
             assert not np.any(np.isnan(valid_error))
             assert not np.any(np.isinf(valid_error))
@@ -195,9 +206,6 @@ if __name__ == '__main__':
             epoch_best = epoch
             print "epoch_best:", epoch_best
             print "valid_error_best:", total_valid_error_best
-
-        if epoch == max_epoch:
-            break
 
     # 学習済みのモデルでテストセットを評価して正解率を求める
     y_test = softmax(np.inner(X_test, w_best))

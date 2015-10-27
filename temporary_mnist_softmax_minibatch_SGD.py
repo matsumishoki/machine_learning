@@ -227,8 +227,9 @@ if __name__ == '__main__':
     # wの可視化
     print "|w_best|:", np.linalg.norm(w_best)
     print "w_best:", w_best
-    for w_k in w_best:
+    fig, axes = plt.subplots(2, 5,  figsize=(10, 4))
+    for w_k, ax in zip(w_best, axes.ravel()):
         w_true = w_k[0:784]  # w_trueとは結果をプロットするために定義したものである
-        # print "w_true:", w_true
-        plt.matshow(w_true.reshape(28, 28), cmap=plt.cm.gray)
-        plt.show()
+       # print "w_true:", w_true
+        ax.matshow(w_true.reshape(28, 28), cmap=plt.cm.gray)
+    plt.show()

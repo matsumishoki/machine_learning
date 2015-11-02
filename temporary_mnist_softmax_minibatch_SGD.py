@@ -59,7 +59,7 @@ if __name__ == '__main__':
     num_valid = len(x_valid)
     num_test = len(x_test)
 
-    # TODO:教科書を参考にして書く
+    # wxの中に定数項であるバイアス項を入れ込む
     X_train = np.hstack((x_train, np.ones((num_train, 1))))
     X_valid = np.hstack((x_valid, np.ones((num_valid, 1))))
     X_test = np.hstack((x_test, np.ones((num_test, 1))))
@@ -70,8 +70,8 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.001  # learning_rate(学習率)を定義する
-    max_iteration = 1      # 収束するまで繰り返す
-    w_scale = 0.001        # TODO:変数の意味を書く
+    max_iteration = 1      # 学習させる回数
+    w_scale = 0.001        # wのノルムの大きさを調整する変数
     batch_size = 300       # ミニバッチ1つあたりのサンプル数
 
     # dim_features次元の重みをnum_classesクラス分用意する

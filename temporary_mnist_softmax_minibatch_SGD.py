@@ -33,6 +33,23 @@ def onehot(k, num_classes=10):
     return t_onehot
 
 
+# PRML pp209 l1 交差エントロピー誤差と正解率を求める関数
+def error_and_accuracy(w, X, t):
+    # 交差エントロピー誤差を計算する
+    y = softmax(np.inner(X, w))
+    T = onehot(t)
+    num_examples = len(X)
+    error = np.sum(-(T*(np.log(y)))) / num_examples
+    assert not np.any(np.isnan(error))
+    assert not np.any(np.isinf(error))
+
+    # 正解率を計算する
+    predict_class = np.argmax(y, axis=1)
+    num_correct = np.sum(t == predict_class)
+    accuracy = num_correct / float(num_examples) * 100
+
+    return (error, accuracy)
+
 # main文
 if __name__ == '__main__':
     x_train, t_train, x_test, t_test = load_mnist.load_mnist()
@@ -106,42 +123,21 @@ if __name__ == '__main__':
         time_elapsed = time_finish - time_start
         print "time_elapsed:", time_elapsed
 
-        # 訓練データセットの交差エントロピー誤差を計算する
-        train_errors = []
-        y_train = softmax(np.inner(X_train, w))
-        T_train = onehot(t_train)
-        train_error = np.sum(-(T_train*(np.log(y_train)))) / num_train
-        train_errors.append(train_error)
-        assert not np.any(np.isnan(train_error))
-        assert not np.any(np.isinf(train_error))
+        # 訓練データセットの交差エントロピー誤差と正解率を表示する
+        train_error, train_accuracy = error_and_accuracy(w, X_train, t_train)
         print "[train] Error:", train_error
-        error_history.append(train_error)
-
-        # 訓練データセットの正解率を表示する
-        predict_class = np.argmax(y_train, axis=1)
-        num_correct = np.sum(t_train == predict_class)
-        train_accuracy = num_correct / float(num_train) * 100
         print "[train] Accuracy:", train_accuracy
+        error_history.append(train_error)
         train_accuracy_history.append(train_accuracy)
 
-        # 検証データセットの交差エントロピー誤差を計算する
-        valid_errors = []
-        y_valid = softmax(np.inner(X_valid, w))
-        T_valid = onehot(t_valid)
-        valid_error = np.sum(-(T_valid*(np.log(y_valid)))) / num_valid
-        valid_errors.append(valid_error)
-        assert not np.any(np.isnan(valid_error))
-        assert not np.any(np.isinf(valid_error))
+        # 検証データセットの交差エントロピー誤差と正解率を表示する
+        valid_error, valid_accuracy = error_and_accuracy(w, X_valid, t_valid)
         print "[valid] Error:", valid_error
-        error_valid_history.append(valid_error)
-
-        # 学習中のモデルで検証セットを評価して正解率を求める
-        predict_class_valid = np.argmax(y_valid, axis=1)
-        num_correct_valid = np.sum(t_valid == predict_class_valid)
-        valid_accuracy = num_correct_valid / float(num_valid) * 100
         print "[valid] Accuracy:", valid_accuracy
-        print "|w|:", np.linalg.norm(w)
+        error_valid_history.append(valid_error)
         valid_accuracy_history.append(valid_accuracy)
+
+        print "|w|:", np.linalg.norm(w)
 
         # 学習曲線をプロットする
         plt.plot(error_history, label="error")
@@ -169,10 +165,7 @@ if __name__ == '__main__':
             print "valid_accuracy_best:", valid_accuracy_best
 
     # 学習済みのモデルでテストセットを評価して正解率を求める
-    y_test = softmax(np.inner(X_test, w_best))
-    predict_class_test = np.argmax(y_test, axis=1)
-    num_correct_test = np.sum(t_test == predict_class_test)
-    test_accuracy = num_correct_test / float(num_test) * 100
+    test_error, test_accuracy = error_and_accuracy(w, X_test, t_test)
 
     print
     print "[test]  Accuracy:", test_accuracy

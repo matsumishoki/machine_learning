@@ -50,7 +50,7 @@ def error_and_accuracy(w, x, t):
 
     return (error, accuracy)
 
-# main文
+
 if __name__ == '__main__':
     x_train, t_train, x_test, t_test = load_mnist.load_mnist()
     t_train = t_train.astype(np.int32)
@@ -138,6 +138,7 @@ if __name__ == '__main__':
         valid_accuracy_history.append(valid_accuracy)
 
         print "|w|:", np.linalg.norm(w)
+        print
 
         # 学習曲線をプロットする
         plt.plot(error_history, label="error")
@@ -154,7 +155,7 @@ if __name__ == '__main__':
         plt.grid()
         plt.show()
 
-        # 検証データのerror率が良ければwの値を保存し，wの最善値を格納する
+        # 検証データの誤差が良ければwの最善値を保存する
         if valid_error <= valid_error_best:
             w_best = w
             epoch_best = epoch
@@ -163,11 +164,11 @@ if __name__ == '__main__':
             print "epoch_best:", epoch_best
             print "valid_error_best:", valid_error_best
             print "valid_accuracy_best:", valid_accuracy_best
+            print
 
-    # 学習済みのモデルでテストセットを評価して正解率を求める
+    # 学習済みのモデルでテストセットを評価して誤差と正解率を求める
     test_error, test_accuracy = error_and_accuracy(w, x_test, t_test)
 
-    print
     print "[test]  Accuracy:", test_accuracy
     print "[valid] Accuracy (best)  :", valid_accuracy_best
     print "[valid] Error (best):", valid_error_best

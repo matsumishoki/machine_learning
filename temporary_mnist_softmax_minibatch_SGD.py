@@ -34,11 +34,11 @@ def onehot(k, num_classes=10):
 
 
 # PRML pp209 l1 交差エントロピー誤差と正解率を求める関数
-def error_and_accuracy(w, X, t):
+def error_and_accuracy(w, x, t):
     # 交差エントロピー誤差を計算する
-    y = softmax(np.inner(X, w))
+    y = softmax(np.inner(x, w))
     T = onehot(t)
-    num_examples = len(X)
+    num_examples = len(x)
     error = np.sum(-(T*(np.log(y)))) / num_examples
     assert not np.any(np.isnan(error))
     assert not np.any(np.isinf(error))
@@ -77,13 +77,13 @@ if __name__ == '__main__':
     num_test = len(x_test)
 
     # wxの中に定数項であるバイアス項を入れ込む
-    X_train = np.hstack((x_train, np.ones((num_train, 1))))
-    X_valid = np.hstack((x_valid, np.ones((num_valid, 1))))
-    X_test = np.hstack((x_test, np.ones((num_test, 1))))
+    x_train = np.hstack((x_train, np.ones((num_train, 1))))
+    x_valid = np.hstack((x_valid, np.ones((num_valid, 1))))
+    x_test = np.hstack((x_test, np.ones((num_test, 1))))
 
     classes = np.unique(t_train)  # 定義されたクラスラベル
     num_classes = len(classes)  # クラス数
-    dim_features = X_train.shape[-1]  # xの次元
+    dim_features = x_train.shape[-1]  # xの次元
 
     # 超パラメータの定義
     learning_rate = 0.001  # learning_rate(学習率)を定義する
@@ -112,11 +112,11 @@ if __name__ == '__main__':
         perm = np.random.permutation(num_train)
 
         for batch_indexes in np.array_split(perm, num_batches):
-            X_batch = X_train[batch_indexes]
+            x_batch = x_train[batch_indexes]
             t_batch = t_train[batch_indexes]
-            y_batch = softmax(np.inner(X_batch, w))
+            y_batch = softmax(np.inner(x_batch, w))
             T_batch = onehot(t_batch)
-            grad_w = np.dot((y_batch - T_batch).T, X_batch)
+            grad_w = np.dot((y_batch - T_batch).T, x_batch)
             w = w - learning_rate * grad_w
 
         time_finish = time.time()
@@ -124,14 +124,14 @@ if __name__ == '__main__':
         print "time_elapsed:", time_elapsed
 
         # 訓練データセットの交差エントロピー誤差と正解率を表示する
-        train_error, train_accuracy = error_and_accuracy(w, X_train, t_train)
+        train_error, train_accuracy = error_and_accuracy(w, x_train, t_train)
         print "[train] Error:", train_error
         print "[train] Accuracy:", train_accuracy
         error_history.append(train_error)
         train_accuracy_history.append(train_accuracy)
 
         # 検証データセットの交差エントロピー誤差と正解率を表示する
-        valid_error, valid_accuracy = error_and_accuracy(w, X_valid, t_valid)
+        valid_error, valid_accuracy = error_and_accuracy(w, x_valid, t_valid)
         print "[valid] Error:", valid_error
         print "[valid] Accuracy:", valid_accuracy
         error_valid_history.append(valid_error)
@@ -165,7 +165,7 @@ if __name__ == '__main__':
             print "valid_accuracy_best:", valid_accuracy_best
 
     # 学習済みのモデルでテストセットを評価して正解率を求める
-    test_error, test_accuracy = error_and_accuracy(w, X_test, t_test)
+    test_error, test_accuracy = error_and_accuracy(w, x_test, t_test)
 
     print
     print "[test]  Accuracy:", test_accuracy

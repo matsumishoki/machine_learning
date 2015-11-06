@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.001  # learning_rate(学習率)を定義する
-    max_iteration = 3      # 学習させる回数
+    max_iteration = 200      # 学習させる回数
     w_scale = 0.001        # wのノルムの大きさを調整する変数
     batch_size = 300       # ミニバッチ1つあたりのサンプル数
 
@@ -106,31 +106,6 @@ if __name__ == '__main__':
         time_elapsed = time_finish - time_start
         print "time_elapsed:", time_elapsed
 
-        # 訓練セットの負の対数尤度関数の値を表示する
-#        train_errors = []
-#        for batch_indexes in np.array_split(
-#                                           np.arange(num_train), num_batches):
-#            X_batch = X_train[batch_indexes]
-#            t_batch = t_train[batch_indexes]
-#            y_batch = softmax(np.inner(X_batch, w))
-#            T_batch = onehot(t_batch)
-#            train_error = np.sum(-(T_batch*(np.log(y_batch)))) / batch_size
-#            train_errors.append(train_error)
-#            assert not np.any(np.isnan(train_error))
-#            assert not np.any(np.isinf(train_error))
-#
-#        train_error = np.mean(train_errors)
-#        print "[train] Error:", train_error
-#        error_history.append(train_error)
-
-#        # 学習中のモデルで訓練セットを評価して正解率を求める
-#        y = softmax(np.inner(X_train, w))   # TODO:損失の計算と統合する
-#        predict_class = np.argmax(y, axis=1)
-#        num_correct = np.sum(t_train == predict_class)
-#        train_accuracy = num_correct / float(num_train) * 100
-#        print "[train] Accuracy:", train_accuracy
-#        train_accuracy_history.append(train_accuracy)
-
         # 訓練データセットの交差エントロピー誤差を計算する
         train_errors = []
         y_train = softmax(np.inner(X_train, w))
@@ -157,7 +132,6 @@ if __name__ == '__main__':
         valid_errors.append(valid_error)
         assert not np.any(np.isnan(valid_error))
         assert not np.any(np.isinf(valid_error))
-        valid_error = np.mean(valid_errors)
         print "[valid] Error:", valid_error
         error_valid_history.append(valid_error)
 
@@ -168,32 +142,6 @@ if __name__ == '__main__':
         print "[valid] Accuracy:", valid_accuracy
         print "|w|:", np.linalg.norm(w)
         valid_accuracy_history.append(valid_accuracy)
-
-#        # 検証セットの負の対数尤度関数の値を表示する
-#        valid_errors = []
-#        for batch_indexes in np.array_split(np.arange(num_valid),
-#                                            num_valid_batches):
-#            X_batch = X_valid[batch_indexes]
-#            t_batch = t_valid[batch_indexes]
-#            y_batch = softmax(np.inner(X_batch, w))
-#            T_batch = onehot(t_batch)
-#            valid_error = np.sum(-(T_batch*(np.log(y_batch)))) / batch_size
-#            valid_errors.append(valid_error)
-#            assert not np.any(np.isnan(valid_error))
-#            assert not np.any(np.isinf(valid_error))
-#
-#        valid_error = np.mean(valid_errors)
-#        print "[valid] Error:", valid_error
-#        error_valid_history.append(valid_error)
-#
-#        # 学習中のモデルで検証セットを評価して正解率を求める
-#        y_valid = softmax(np.inner(X_valid, w))  # TODO:損失の計算と統合する
-#        predict_class_valid = np.argmax(y_valid, axis=1)
-#        num_correct_valid = np.sum(t_valid == predict_class_valid)
-#        valid_accuracy = num_correct_valid / float(num_valid) * 100
-#        print "[valid] Accuracy:", valid_accuracy
-#        print "|w|:", np.linalg.norm(w)
-#        valid_accuracy_history.append(valid_accuracy)
 
         # 学習曲線をプロットする
         plt.plot(error_history, label="error")

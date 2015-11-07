@@ -44,3 +44,9 @@ if __name__ == '__main__':
     classes = np.unique(t_train)  # 定義されたクラスラベル
     num_classes = len(classes)  # クラス数
     dim_features = x_train.shape[-1]  # xの次元
+
+    # 超パラメータの定義
+    learning_rate = 0.001  # learning_rate(学習率)を定義する
+    max_iteration = 200      # 学習させる回数
+    w_scale = 0.001        # wのノルムの大きさを調整する変数
+    batch_size = 300       # ミニバッチ1つあたりのサンプル数

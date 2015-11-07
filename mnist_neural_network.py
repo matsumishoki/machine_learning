@@ -52,4 +52,28 @@ if __name__ == '__main__':
     batch_size = 300       # ミニバッチ1つあたりのサンプル数
 
     # dim_features次元の重みをnum_classesクラス分用意する
-    w = w_scale * np.random.randn(num_classes, dim_features)
+    # 入力層と中間層の間のw
+    w_1 = w_scale * np.random.randn(num_classes, dim_features)
+
+    # 中間層と出力層の間のw
+    w_2 = w_scale * np.random.randn(num_classes, dim_features)
+
+    # 学習させるループ
+
+        # 入力層と中間層のw_1を更新する
+
+        # 中間層と入力層のw_2を更新する
+
+        # 訓練データセットの交差エントロピー誤差と正解率を表示する(出力層に怒られないかどうか)
+
+            # もし，出力層に怒られたのならば，w_1を更新する
+
+        # 検証データセットの交差エントロピー誤差と正解率を表示する
+
+        # 学習曲線をプロットする
+
+        # 検証データの誤差が良ければwの最善値を保存する
+
+    # 学習済みのモデルをテストセットで誤差と正解率を求める
+
+    # wの可視化

@@ -50,3 +50,6 @@ if __name__ == '__main__':
     max_iteration = 200      # 学習させる回数
     w_scale = 0.001        # wのノルムの大きさを調整する変数
     batch_size = 300       # ミニバッチ1つあたりのサンプル数
+
+    # dim_features次元の重みをnum_classesクラス分用意する
+    w = w_scale * np.random.randn(num_classes, dim_features)

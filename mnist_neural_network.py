@@ -37,7 +37,7 @@ if __name__ == '__main__':
     num_test = len(x_test)
 
     # wxの中に定数項であるバイアス項を入れ込む
-    x_train = np.hstack((x_train, np.ones((num_train, 1))))
+    x_train = np.hstack((x_train, np.ones((num_train, 1)))) #(1×)
     x_valid = np.hstack((x_valid, np.ones((num_valid, 1))))
     x_test = np.hstack((x_test, np.ones((num_test, 1))))
 
@@ -52,35 +52,38 @@ if __name__ == '__main__':
     batch_size = 300       # ミニバッチ1つあたりのサンプル数
 
     # dim_features次元の重みをnum_classesクラス分用意する
-    # 入力層と中間層の間のw
+    # 入力層と中間層の間のw_1(D×M)
     w_1 = w_scale * np.random.randn(num_classes, dim_features)
 
-    # 中間層と出力層の間のw
+    # 中間層と出力層の間のw(M×K)
     w_2 = w_scale * np.random.randn(num_classes, dim_features)
 
     # 学習させるループ
-        # 順伝播
-        # 入力層と中間層のw_1(M×D)によって訓練データとの行列積を計算する(a_j(M×1)を求める)
+        # mini batchi SGDで重みを更新させるループ
+            # 順伝播
+            # 入力層と中間層のx(1×D)w_1(D×M)によって訓練データとの行列積(xw_1)を計算する(a_j(1×M)を求める)
 
-        # 求まったa_j(M×1)を隠れユニットのz(M×1)にする(活性化関数にa_j(M×1)を代入する)
+            # 求まったa_j(1×M)を隠れユニットのz(1×M)にする(活性化関数にa_j(1×M)を代入する)
 
-        # 入力されたz(1×M)と,中間層と入力層のw_2.T(K×M)によって行列積を計算する
+            # 入力されたz(1×M)と,中間層と入力層のw_2(M×K)によって行列積(zw_2)を計算する
 
-        # 逆伝播
-        # 出力された値y(K×1)から正解ラベルt(K×1)の値を引く(δ_y)
+            # 逆伝播
+            # 出力された値y(1×K)から正解ラベルt(1×K)を引く(y-t)(δ_y(1×K))
 
-        # δ_y(K×1)とz.T(1×M)との行列積を計算する(誤差をw_2で微分したもの(grad_w_2))
+            # z.T(M×1)とδ_y(1×K)との行列積(z.T δ_y)を計算する(誤差をw_2で微分したもの(grad_w_2(M×K)))
 
-        # w_2.T(M×K)とδ_y(K×1)との行列積を計算する(TODO:変数名考える(一時的にb(M×1)))
+            # δ_y(1×K)とw_2(K×M)との行列積(δ_y w2)を計算する(一時的にgrad_z(1×M))
 
-        # b(M×1)と(1-z**2)の要素積を計算する(δ_z(M×1))
+            # grad_z(1×M)と(1-z**2)の要素積を計算する(δ_z(1×M))
 
-        # δ_z(M×1)とx.T(1×D)との行列積を計算する(grad_w_1)
+            # x.T(D×1)とδ_z(1×M)との行列積(x.T δ_z)を計算する(grad_w_1(D×M))
 
-        # w_1を更新する(w_1 = w_1 - learning_rate*grad_w_1)
+            # w_1を更新する(w_1 = w_1 - learning_rate*grad_w_1)
 
-        # w_2を更新する(w_2 = w_2 - learning_rate*grad_w_2)
+            # w_2を更新する(w_2 = w_2 - learning_rate*grad_w_2)
 
+        # 誤差
+        # E(K×K)を出す0.5×(y-t)×(y-t).T次元数は，{0.5×(1×K)(K×1)}
         # 訓練データセットの交差エントロピー誤差と正解率を表示する
 
         # 検証データセットの交差エントロピー誤差と正解率を表示する

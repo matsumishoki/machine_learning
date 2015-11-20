@@ -202,6 +202,19 @@ if __name__ == '__main__':
         valid_accuracy_history.append(valid_accuracy)
 
         # 学習曲線をプロットする
+        plt.plot(error_history, label="error")
+        plt.plot(error_valid_history, label="valid_error")
+        plt.title("error")
+        plt.legend(['train_error', 'valid_error'])
+        plt.grid()
+        plt.show()
+
+        plt.plot(train_accuracy_history, label="train_accuracy")
+        plt.plot(valid_accuracy_history, label="valid_accuracy")
+        plt.legend(loc="lower right")
+        plt.title("train_accuracy")
+        plt.grid()
+        plt.show()
 
         # 検証データの誤差が良ければwの最善値を保存する
 

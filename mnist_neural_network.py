@@ -101,7 +101,7 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.001  # learning_rate(学習率)を定義する
-    max_iteration = 30      # 学習させる回数
+    max_iteration = 100      # 学習させる回数
     w_scale = 0.001        # wのノルムの大きさを調整する変数
     batch_size = 300       # ミニバッチ1つあたりのサンプル数
     dim_hidden = 100         # 隠れ層の次元数を定義する
@@ -239,6 +239,20 @@ if __name__ == '__main__':
     print "Finish epoch:", epoch
     print "Batch size:", batch_size
     print "Learning rate:", learning_rate
+    print "dim_hidden:", dim_hidden
     print
 
     # wの可視化
+    print "|w_1_best|:", np.linalg.norm(w_1_best)
+    print "w_1_best:", w_1_best
+    print "|w_2_best|:", np.linalg.norm(w_2_best)
+    print "w_2_best:", w_2_best
+    w_best = np.dot(w_1_best, w_2_best[:-1, :])
+    w_best = w_best.T
+    fig, axes = plt.subplots(2, 5,  figsize=(10, 4))
+    for w_k, ax in zip(w_best, axes.ravel()):
+        w_true = w_k[0:784]  # w_trueとは結果をプロットするために定義したものである
+        ax.matshow(w_true.reshape(28, 28), cmap=plt.cm.gray)
+    plt.show()
+    print "|w_2_best|:", np.linalg.norm(w_2_best)
+    print "w_2_best:", w_2_best

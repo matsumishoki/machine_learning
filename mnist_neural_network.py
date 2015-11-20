@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.001  # learning_rate(学習率)を定義する
-    max_iteration = 200      # 学習させる回数
+    max_iteration = 1      # 学習させる回数
     w_scale = 0.001        # wのノルムの大きさを調整する変数
     batch_size = 300       # ミニバッチ1つあたりのサンプル数
 
@@ -59,6 +59,7 @@ if __name__ == '__main__':
     w_2 = w_scale * np.random.randn(num_classes, dim_features)
 
     # 学習させるループ
+    for epoch in range(max_iteration):
         # mini batchi SGDで重みを更新させるループ
             # 順伝播
             # 入力層と中間層のx(1×D)w_1(D×M)によって訓練データとの行列積(xw_1)を計算する(a_j(1×M)を求める)
@@ -94,6 +95,7 @@ if __name__ == '__main__':
         # 学習曲線をプロットする
 
         # 検証データの誤差が良ければwの最善値を保存する
+        break
 
     # 学習済みのモデルをテストセットで誤差と正解率を求める
 

@@ -51,14 +51,14 @@ if __name__ == '__main__':
     max_iteration = 1      # 学習させる回数
     w_scale = 0.001        # wのノルムの大きさを調整する変数
     batch_size = 300       # ミニバッチ1つあたりのサンプル数
-    dim_marcof = 3         # 隠れ層の次元数を定義する
+    dim_m = 3         # 隠れ層の次元数を定義する
 
     # dim_features次元の重みをnum_classesクラス分用意する
     # 入力層と中間層の間のw_1(D×M)
-    w_1 = w_scale * np.random.randn(num_classes, dim_features)
+    w_1 = w_scale * np.random.randn(dim_features, dim_m)
 
     # 中間層と出力層の間のw(M×K)
-    w_2 = w_scale * np.random.randn(num_classes, dim_features)
+    w_2 = w_scale * np.random.randn(dim_m, num_classes)
 
     error_history = []
     train_accuracy_history = []

@@ -34,9 +34,8 @@ def onehot(k, num_classes=10):
 
 
 # PRML pp209 l1 交差エントロピー誤差と正解率を求める関数
-def error_and_accuracy(w, x, t):
+def error_and_accuracy(y, x, t):
     # 交差エントロピー誤差を計算する
-    y = softmax(np.inner(x, w))
     T = onehot(t)
     num_examples = len(x)
     error = np.sum(-(T*(np.log(y)))) / num_examples
@@ -87,7 +86,7 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.001  # learning_rate(学習率)を定義する
-    max_iteration = 1      # 学習させる回数
+    max_iteration = 30      # 学習させる回数
     w_scale = 0.001        # wのノルムの大きさを調整する変数
     batch_size = 300       # ミニバッチ1つあたりのサンプル数
     dim_m = 3         # 隠れ層の次元数を定義する
@@ -113,6 +112,7 @@ if __name__ == '__main__':
 
     # 学習させるループ
     for epoch in range(max_iteration):
+        print "epoch:", epoch
 
         # mini batchi SGDで重みを更新させるループ
         time_start = time.time()
@@ -164,19 +164,26 @@ if __name__ == '__main__':
             # w_2を更新する(w_2 = w_2 - learning_rate*grad_w_2)
             w_2 = w_2 - learning_rate * grad_w_2
 
+        time_finish = time.time()
+        time_elapsed = time_finish - time_start
+        print "time_elapsed:", time_elapsed
+
         # 誤差
         # E(K×K)を出す0.5×(y-t)×(y-t).T次元数は，{0.5×(1×K)(K×1)}
         # E = sum(t×log(y)(1×K))
         # 訓練データセットの交差エントロピー誤差と正解率を表示する
+        train_error, train_accuracy = error_and_accuracy(y,
+                                                         x_batch, t_batch)
+        print "[train] Error:", train_error
+        print "[train] Accuracy:", train_accuracy
+        error_history.append(train_error)
+        train_accuracy_history.append(train_accuracy)
 
         # 検証データセットの交差エントロピー誤差と正解率を表示する
 
         # 学習曲線をプロットする
 
         # 検証データの誤差が良ければwの最善値を保存する
-
-        time_finish = time.time()
-        time_elapsed = time_finish - time_start
 
     # 学習済みのモデルをテストセットで誤差と正解率を求める
 

@@ -58,6 +58,18 @@ if __name__ == '__main__':
     # 中間層と出力層の間のw(M×K)
     w_2 = w_scale * np.random.randn(num_classes, dim_features)
 
+    error_history = []
+    train_accuracy_history = []
+    error_valid_history = []
+    valid_accuracy_history = []
+
+    w_1_best = 0
+    w_2_best = 0
+    valid_accuracy_best = 0
+    valid_error_best = 10
+    num_batches = num_train / batch_size  # ミニバッチの個数
+    num_valid_batches = num_valid / batch_size
+
     # 学習させるループ
     for epoch in range(max_iteration):
         # mini batchi SGDで重みを更新させるループ

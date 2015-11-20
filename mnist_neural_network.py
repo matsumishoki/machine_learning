@@ -217,6 +217,16 @@ if __name__ == '__main__':
         plt.show()
 
         # 検証データの誤差が良ければwの最善値を保存する
+        if valid_error <= valid_error_best:
+            w_1_best = w_1
+            w_2_best = w_2
+            epoch_best = epoch
+            valid_error_best = valid_error
+            valid_accuracy_best = valid_accuracy
+            print "epoch_best:", epoch_best
+            print "valid_error_best:", valid_error_best
+            print "valid_accuracy_best:", valid_accuracy_best
+            print
 
     # 学習済みのモデルをテストセットで誤差と正解率を求める
 

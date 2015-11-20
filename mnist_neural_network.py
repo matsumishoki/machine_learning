@@ -121,6 +121,7 @@ if __name__ == '__main__':
         for batch_indexes in np.array_split(perm, num_batches):
             x_batch = x_train[batch_indexes]
             t_batch = t_train[batch_indexes]
+            T_batch = onehot(t_batch)
 
             # 順伝播
             # 入力層と中間層のx(1×D)w_1(D×M)によって訓練データとの行列積(xw_1)を計算する(a_j(1×M)を求める)
@@ -140,18 +141,28 @@ if __name__ == '__main__':
 
             # 逆伝播
             # 出力された値y(1×K)から正解ラベルt(1×K)を引く(y-t)(δ_y(1×K))
+            d_y = y - T_batch
 
-            # z.T(M×1)とδ_y(1×K)との行列積(z.T δ_y)を計算する(誤差をw_2で微分したもの(grad_w_2(M×K)))
+            # z.T(M×1)とδ_y(1×K)との行列積(z.T δ_y)を計算する
+            # (誤差をw_2で微分したもの(grad_w_2(M×K)))
+            grad_w_2 = np.dot(z_new_shape.T, d_y)
 
-            # δ_y(1×K)とw_2(K×M)との行列積(δ_y w2)を計算する(一時的にgrad_z(1×M))
+            # δ_y(1×K)とw_2(K×M)との行列積(δ_y w2)を計算する(grad_z(1×M))
+            grad_z = np.dot(d_y, w_2.T)
 
             # grad_z(1×M)と(1-z**2)の要素積を計算する(δ_z(1×M))
+            d_z = grad_z * (np.ones((300, 4)) - z_new_shape**2)
 
             # x.T(D×1)とδ_z(1×M)との行列積(x.T δ_z)を計算する(grad_w_1(D×M))
+            grad_w_1 = np.dot(x_batch.T, d_z)
 
             # w_1を更新する(w_1 = w_1 - learning_rate*grad_w_1)
+            temp_grad_w_1 = grad_w_1.T[0:3]
+            new_grad_w_1 = temp_grad_w_1.T
+            w_1 = w_1 - learning_rate * new_grad_w_1
 
             # w_2を更新する(w_2 = w_2 - learning_rate*grad_w_2)
+            w_2 = w_2 - learning_rate * grad_w_2
 
         # 誤差
         # E(K×K)を出す0.5×(y-t)×(y-t).T次元数は，{0.5×(1×K)(K×1)}

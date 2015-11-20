@@ -34,8 +34,23 @@ def onehot(k, num_classes=10):
 
 
 # PRML pp209 l1 交差エントロピー誤差と正解率を求める関数
-def error_and_accuracy(y, x, t):
+def error_and_accuracy(w_1, w_2, x, t):
     # 交差エントロピー誤差を計算する
+    # 順伝播
+    # 入力層と中間層のx(1×D)w_1(D×M)によって訓練データとの行列積(xw_1)を計算する(a_j(1×M)を求める)
+    a_j = np.dot(x, w_1)
+
+    # 求まったa_j(1×M)を隠れユニットのz(1×M)にする(活性化関数にa_j(1×M)を代入する)
+    z = np.tanh(a_j)
+
+    # zのshapeを変更する
+    z_new_shape = np.hstack((z, np.ones((len(z), 1))))
+
+    # 入力されたz(1×M)と,中間層と入力層のw_2(M×K)によって行列積(zw_2)を計算する(a_y(1×K))
+    a_y = np.dot(z_new_shape, w_2)
+
+    # 出力a_y(1×K)をsoftmax関数に代入するy(1×K)
+    y = softmax(a_y)
     T = onehot(t)
     num_examples = len(x)
     error = np.sum(-(T*(np.log(y)))) / num_examples
@@ -76,7 +91,7 @@ if __name__ == '__main__':
     num_test = len(x_test)
 
     # wxの中に定数項であるバイアス項を入れ込む
-    x_train = np.hstack((x_train, np.ones((num_train, 1))))  # (1×K)
+    x_train = np.hstack((x_train, np.ones((num_train, 1))))  # (N×D)
     x_valid = np.hstack((x_valid, np.ones((num_valid, 1))))
     x_test = np.hstack((x_test, np.ones((num_test, 1))))
 
@@ -89,14 +104,14 @@ if __name__ == '__main__':
     max_iteration = 30      # 学習させる回数
     w_scale = 0.001        # wのノルムの大きさを調整する変数
     batch_size = 300       # ミニバッチ1つあたりのサンプル数
-    dim_m = 3         # 隠れ層の次元数を定義する
+    dim_hidden = 100         # 隠れ層の次元数を定義する
 
     # dim_features次元の重みをnum_classesクラス分用意する
     # 入力層と中間層の間のw_1(D×M)
-    w_1 = w_scale * np.random.randn(dim_features, dim_m)
+    w_1 = w_scale * np.random.randn(dim_features, dim_hidden)
 
     # 中間層と出力層の間のw(M×K)
-    w_2 = w_scale * np.random.randn(dim_m+1, num_classes)
+    w_2 = w_scale * np.random.randn(dim_hidden+1, num_classes)
 
     error_history = []
     train_accuracy_history = []
@@ -151,15 +166,14 @@ if __name__ == '__main__':
             grad_z = np.dot(d_y, w_2.T)
 
             # grad_z(1×M)と(1-z**2)の要素積を計算する(δ_z(1×M))
-            d_z = grad_z * (np.ones((300, 4)) - z_new_shape**2)
+            d_z = grad_z * (np.ones((batch_size,
+                                     dim_hidden+1)) - z_new_shape**2)
 
             # x.T(D×1)とδ_z(1×M)との行列積(x.T δ_z)を計算する(grad_w_1(D×M))
             grad_w_1 = np.dot(x_batch.T, d_z)
 
             # w_1を更新する(w_1 = w_1 - learning_rate*grad_w_1)
-            temp_grad_w_1 = grad_w_1.T[0:3]
-            new_grad_w_1 = temp_grad_w_1.T
-            w_1 = w_1 - learning_rate * new_grad_w_1
+            w_1 = w_1 - learning_rate * grad_w_1[:, :-1]
 
             # w_2を更新する(w_2 = w_2 - learning_rate*grad_w_2)
             w_2 = w_2 - learning_rate * grad_w_2
@@ -172,14 +186,20 @@ if __name__ == '__main__':
         # E(K×K)を出す0.5×(y-t)×(y-t).T次元数は，{0.5×(1×K)(K×1)}
         # E = sum(t×log(y)(1×K))
         # 訓練データセットの交差エントロピー誤差と正解率を表示する
-        train_error, train_accuracy = error_and_accuracy(y,
-                                                         x_batch, t_batch)
+        train_error, train_accuracy = error_and_accuracy(w_1, w_2,
+                                                         x_train, t_train)
         print "[train] Error:", train_error
         print "[train] Accuracy:", train_accuracy
         error_history.append(train_error)
         train_accuracy_history.append(train_accuracy)
 
         # 検証データセットの交差エントロピー誤差と正解率を表示する
+        valid_error, valid_accuracy = error_and_accuracy(w_1, w_2,
+                                                         x_valid, t_valid)
+        print "[valid] Error:", valid_error
+        print "[valid] Accuracy:", valid_accuracy
+        error_valid_history.append(valid_error)
+        valid_accuracy_history.append(valid_accuracy)
 
         # 学習曲線をプロットする
 

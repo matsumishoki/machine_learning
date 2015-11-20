@@ -12,6 +12,15 @@ import matplotlib.pyplot as plt
 import time
 
 
+def softmax(s):
+    len(s.shape)
+    exp_s = np.exp(s)
+    if len(s.shape) == 1:
+        return exp_s / np.sum(exp_s)
+
+    if len(s.shape) == 2:
+        return exp_s / np.sum(exp_s, axis=1, keepdims=True)
+
 if __name__ == '__main__':
     x_train, t_train, x_test, t_test = load_mnist.load_mnist()
     t_train = t_train.astype(np.int32)

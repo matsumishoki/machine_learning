@@ -97,7 +97,7 @@ if __name__ == '__main__':
     w_1 = w_scale * np.random.randn(dim_features, dim_m)
 
     # 中間層と出力層の間のw(M×K)
-    w_2 = w_scale * np.random.randn(dim_m, num_classes)
+    w_2 = w_scale * np.random.randn(dim_m+1, num_classes)
 
     error_history = []
     train_accuracy_history = []
@@ -129,9 +129,14 @@ if __name__ == '__main__':
             # 求まったa_j(1×M)を隠れユニットのz(1×M)にする(活性化関数にa_j(1×M)を代入する)
             z = np.tanh(a_j)
 
+            # zのshapeを変更する
+            z_new_shape = np.hstack((z, np.ones((len(z), 1))))
+
             # 入力されたz(1×M)と,中間層と入力層のw_2(M×K)によって行列積(zw_2)を計算する(a_y(1×K))
+            a_y = np.dot(z_new_shape, w_2)
 
             # 出力a_y(1×K)をsoftmax関数に代入するy(1×K)
+            y = softmax(a_y)
 
             # 逆伝播
             # 出力された値y(1×K)から正解ラベルt(1×K)を引く(y-t)(δ_y(1×K))

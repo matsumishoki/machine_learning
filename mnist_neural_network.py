@@ -21,6 +21,18 @@ def softmax(s):
     if len(s.shape) == 2:
         return exp_s / np.sum(exp_s, axis=1, keepdims=True)
 
+
+def onehot(k, num_classes=10):
+    assert isinstance(k, np.ndarray)
+    assert k.ndim == 1
+    assert k.dtype == np.int, k.dtype
+
+    num_examples = len(k)
+    t_onehot = np.zeros((num_examples, num_classes))
+    t_onehot[np.arange(num_examples), k] = 1
+    return t_onehot
+
+
 if __name__ == '__main__':
     x_train, t_train, x_test, t_test = load_mnist.load_mnist()
     t_train = t_train.astype(np.int32)

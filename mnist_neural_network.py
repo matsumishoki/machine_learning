@@ -9,6 +9,7 @@ import load_mnist
 import numpy as np
 from sklearn.cross_validation import train_test_split
 import matplotlib.pyplot as plt
+import time
 
 
 if __name__ == '__main__':
@@ -37,7 +38,7 @@ if __name__ == '__main__':
     num_test = len(x_test)
 
     # wxの中に定数項であるバイアス項を入れ込む
-    x_train = np.hstack((x_train, np.ones((num_train, 1)))) #(1×)
+    x_train = np.hstack((x_train, np.ones((num_train, 1))))  # (1×K)
     x_valid = np.hstack((x_valid, np.ones((num_valid, 1))))
     x_test = np.hstack((x_test, np.ones((num_test, 1))))
 
@@ -50,6 +51,7 @@ if __name__ == '__main__':
     max_iteration = 1      # 学習させる回数
     w_scale = 0.001        # wのノルムの大きさを調整する変数
     batch_size = 300       # ミニバッチ1つあたりのサンプル数
+    dim_marcof = 3         # 隠れ層の次元数を定義する
 
     # dim_features次元の重みをnum_classesクラス分用意する
     # 入力層と中間層の間のw_1(D×M)
@@ -72,7 +74,15 @@ if __name__ == '__main__':
 
     # 学習させるループ
     for epoch in range(max_iteration):
+
         # mini batchi SGDで重みを更新させるループ
+        time_start = time.time()
+        perm = np.random.permutation(num_train)
+
+        for batch_indexes in np.array_split(perm, num_batches):
+            x_batch = x_train[batch_indexes]
+            t_batch = t_train[batch_indexes]
+
             # 順伝播
             # 入力層と中間層のx(1×D)w_1(D×M)によって訓練データとの行列積(xw_1)を計算する(a_j(1×M)を求める)
 
@@ -107,7 +117,9 @@ if __name__ == '__main__':
         # 学習曲線をプロットする
 
         # 検証データの誤差が良ければwの最善値を保存する
-        break
+
+        time_finish = time.time()
+        time_elapsed = time_finish - time_start
 
     # 学習済みのモデルをテストセットで誤差と正解率を求める
 

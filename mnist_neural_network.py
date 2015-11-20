@@ -33,6 +33,24 @@ def onehot(k, num_classes=10):
     return t_onehot
 
 
+# PRML pp209 l1 交差エントロピー誤差と正解率を求める関数
+def error_and_accuracy(w, x, t):
+    # 交差エントロピー誤差を計算する
+    y = softmax(np.inner(x, w))
+    T = onehot(t)
+    num_examples = len(x)
+    error = np.sum(-(T*(np.log(y)))) / num_examples
+    assert not np.any(np.isnan(error))
+    assert not np.any(np.isinf(error))
+
+    # 正解率を計算する
+    predict_class = np.argmax(y, axis=1)
+    num_correct = np.sum(t == predict_class)
+    accuracy = num_correct / float(num_examples) * 100
+
+    return (error, accuracy)
+
+
 if __name__ == '__main__':
     x_train, t_train, x_test, t_test = load_mnist.load_mnist()
     t_train = t_train.astype(np.int32)

@@ -229,5 +229,16 @@ if __name__ == '__main__':
             print
 
     # 学習済みのモデルをテストセットで誤差と正解率を求める
+    test_error, test_accuracy = error_and_accuracy(w_1, w_2,
+                                                   x_test, t_test)
+
+    print "[test]  Accuracy:", test_accuracy
+    print "[valid] Accuracy (best)  :", valid_accuracy_best
+    print "[valid] Error (best):", valid_error_best
+    print "Best epoch :", epoch_best
+    print "Finish epoch:", epoch
+    print "Batch size:", batch_size
+    print "Learning rate:", learning_rate
+    print
 
     # wの可視化

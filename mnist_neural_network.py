@@ -140,10 +140,10 @@ if __name__ == '__main__':
 
             # 順伝播
             # 入力層と中間層のx(1×D)w_1(D×M)によって訓練データとの行列積(xw_1)を計算する(a_j(1×M)を求める)
-            a_j = np.dot(x_batch, w_1)
+            a_z = np.dot(x_batch, w_1)
 
             # 求まったa_j(1×M)を隠れユニットのz(1×M)にする(活性化関数にa_j(1×M)を代入する)
-            z = np.tanh(a_j)
+            z = np.tanh(a_z)
 
             # zのshapeを変更する
             z_new_shape = np.hstack((z, np.ones((len(z), 1))))

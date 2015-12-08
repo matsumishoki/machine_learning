@@ -16,15 +16,13 @@ from chainer import Variable, FunctionSet
 from chainer.optimizers import SGD, Adam
 
 
-def error_and_accuracy(model, x_data, t_data):
+def error_and_accuracy(w_1, w_2, x_data, t_data):
     x = Variable(x_data)
     t = Variable(t_data)
 
-    a_1 = linear_1(x)
-    z_1 = F.relu(a_1)
-    z_1 = F.dropout(z_1, 0.5)
-
-    a_y = linear_2(z_1)
+    a_z = F.linear(x, w_1, b_1)
+    z = F.tanh(a_z)
+    a_y = F.linear(z, w_2, b_2)
 
     error = F.softmax_cross_entropy(a_y, t)
     accuracy = F.accuracy(a_y, t)
@@ -55,36 +53,27 @@ if __name__ == '__main__':
     num_valid = len(x_valid)
     num_test = len(x_test)
 
-#    # wxの中に定数項であるバイアス項を入れ込む
-#    x_train = np.hstack((x_train, np.ones((num_train, 1))))  # (N×D)
-#    x_valid = np.hstack((x_valid, np.ones((num_valid, 1))))
-#    x_test = np.hstack((x_test, np.ones((num_test, 1))))
-
     classes = np.unique(t_train)  # 定義されたクラスラベル
     num_classes = len(classes)  # クラス数
     dim_features = x_train.shape[-1]  # xの次元
 
     # 超パラメータの定義
-    learning_rate = 0.001  # learning_rate(学習率)を定義する
+    learning_rate = 0.1  # learning_rate(学習率)を定義する
     max_iteration = 100      # 学習させる回数
-    w_scale = 0.001        # wのノルムの大きさを調整する変数
-    batch_size = 300       # ミニバッチ1つあたりのサンプル数
-    dim_hidden = 100         # 隠れ層の次元数を定義する
+    w_scale = 0.1        # wのノルムの大きさを調整する変数
+    batch_size = 200       # ミニバッチ1つあたりのサンプル数
+    dim_hidden = 200         # 隠れ層の次元数を定義する
 
-#    # dim_features次元の重みをnum_classesクラス分用意する
-#    # 入力層と中間層の間のw_1(D×M)
-#    w_1 = w_scale * np.random.randn(dim_features, dim_hidden)
-#
-#    # 中間層と出力層の間のw(M×K)
-#    w_2 = w_scale * np.random.randn(dim_hidden+1, num_classes)
+    # dim_features次元の重みをnum_classesクラス分用意する
+    # 入力層と中間層の間のw_1(D×M)
+    w_1_data = w_scale * np.random.randn(dim_hidden, dim_features)
+    w_1_data = w_1_data.astype(np.float32)
+    w_1 = Variable(w_1_data)
 
-    linear_1 = F.Linear(dim_features, dim_hidden)
-    linear_2 = F.Linear(dim_hidden, num_classes)
-    model = FunctionSet(linear_1=linear_1,
-                        linear_2=linear_2)
-#    optimizer = SGD(lr=learning_rate)
-    optimizer = Adam(learning_rate)
-    optimizer.setup(model)
+    # 中間層と出力層の間のw(M×K)
+    w_2_data = w_scale * np.random.randn(num_classes, dim_hidden)
+    w_2_data = w_2_data.astype(np.float32)
+    w_2 = Variable(w_2_data)
 
     error_history = []
     train_accuracy_history = []
@@ -98,6 +87,11 @@ if __name__ == '__main__':
     num_batches = num_train / batch_size  # ミニバッチの個数
     num_valid_batches = num_valid / batch_size
 
+    b_1_data = np.zeros((dim_hidden, ), dtype=np.float32)
+    b_1 = Variable(b_1_data)
+
+    b_2_data = np.zeros((num_classes, ), dtype=np.float32)
+    b_2 = Variable(b_2_data)
     # 学習させるループ
     for epoch in range(max_iteration):
         print "epoch:", epoch
@@ -113,17 +107,29 @@ if __name__ == '__main__':
             x = Variable(x_batch)
             t = Variable(t_batch)
 
-            a_1 = linear_1(x)
-            z_1 = F.relu(a_1)
-            z_1 = F.dropout(z_1, 0.5)
+            # 順伝播
+            a_z = F.linear(x, w_1, b_1)
+            z = F.tanh(a_z)
+            a_y = F.linear(z, w_2, b_2)
 
-            a_y = linear_2(z_1)
-            error = F.softmax_cross_entropy(a_y, t)
-            accuracy = F.accuracy(a_y, t)
+            loss = F.softmax_cross_entropy(a_y, t)
 
-            optimizer.zero_grads()
-            error.backward()
-            optimizer.update()
+            # 逆伝播
+            w_1.zerograd()
+            w_2.zerograd()
+            b_1.zerograd()
+            b_2.zerograd()
+
+            loss.backward(retain_grad=True)
+            grad_w_1 = w_1.grad
+            grad_w_2 = w_2.grad
+            grad_b_1 = b_1.grad
+            grad_b_2 = b_2.grad
+
+            w_1.data = w_1.data - learning_rate * grad_w_1
+            w_2.data = w_2.data - learning_rate * grad_w_2
+            b_1.data = b_1.data - learning_rate * grad_b_1
+            b_2.data = b_2.data - learning_rate * grad_b_2
 
         time_finish = time.time()
         time_elapsed = time_finish - time_start
@@ -133,7 +139,7 @@ if __name__ == '__main__':
         # E(K×K)を出す0.5×(y-t)×(y-t).T次元数は，{0.5×(1×K)(K×1)}
         # E = sum(t×log(y)(1×K))
         # 訓練データセットの交差エントロピー誤差と正解率を表示する
-        train_error, train_accuracy = error_and_accuracy(model,
+        train_error, train_accuracy = error_and_accuracy(w_1, w_2,
                                                          x_train, t_train)
         print "[train] Error:", train_error
         print "[train] Accuracy:", train_accuracy
@@ -141,7 +147,7 @@ if __name__ == '__main__':
         train_accuracy_history.append(train_accuracy)
 
         # 検証データセットの交差エントロピー誤差と正解率を表示する
-        valid_error, valid_accuracy = error_and_accuracy(model,
+        valid_error, valid_accuracy = error_and_accuracy(w_1, w_2,
                                                          x_valid, t_valid)
         print "[valid] Error:", valid_error
         print "[valid] Accuracy:", valid_accuracy
@@ -165,7 +171,8 @@ if __name__ == '__main__':
 
         # 検証データの誤差が良ければwの最善値を保存する
         if valid_error <= valid_error_best:
-            model_best = copy.deepcopy(model)
+            w_1_best = w_1
+            w_2_best = w_2
             epoch_best = epoch
             valid_error_best = valid_error
             valid_accuracy_best = valid_accuracy
@@ -175,7 +182,7 @@ if __name__ == '__main__':
             print
 
     # 学習済みのモデルをテストセットで誤差と正解率を求める
-    test_error, test_accuracy = error_and_accuracy(model,
+    test_error, test_accuracy = error_and_accuracy(w_1, w_2,
                                                    x_test, t_test)
 
     print "[test]  Accuracy:", test_accuracy
@@ -189,16 +196,13 @@ if __name__ == '__main__':
     print
 
     # wの可視化
-#    print "|w_1_best|:", np.linalg.norm(w_1_best)
-    print "w_1_best:", w_1_best
-#    print "|w_2_best|:", np.linalg.norm(w_2_best)
-    print "w_2_best:", w_2_best
-#    w_best = np.dot(w_1_best, w_2_best[:-1, :])
-#    w_best = w_best.T
-#    fig, axes = plt.subplots(2, 5,  figsize=(10, 4))
-#    for w_k, ax in zip(w_best, axes.ravel()):
-#        w_true = w_k[0:784]  # w_trueとは結果をプロットするために定義したものである
-#        ax.matshow(w_true.reshape(28, 28), cmap=plt.cm.gray)
-#    plt.show()
-#    print "|w_2_best|:", np.linalg.norm(w_2_best)
-#    print "w_2_best:", w_2_best
+    print "|w_1_best|:", np.linalg.norm(w_1_best.data)
+    print "w_1_best:", w_1_best.data
+    print "|w_2_best|:", np.linalg.norm(w_2_best.data)
+    print "w_2_best:", w_2_best.data
+    w_best = np.dot(w_2_best.data, w_1_best.data)
+    fig, axes = plt.subplots(2, 5,  figsize=(10, 4))
+    for w_k, ax in zip(w_best, axes.ravel()):
+        w_true = w_k[0:784]  # w_trueとは結果をプロットするために定義したものである
+        ax.matshow(w_true.reshape(28, 28), cmap=plt.cm.gray)
+    plt.show()

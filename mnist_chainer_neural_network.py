@@ -16,7 +16,7 @@ from chainer import Variable, FunctionSet
 from chainer.optimizers import SGD, Adam
 
 
-def error_and_accuracy(w_1, w_2, x_data, t_data):
+def error_and_accuracy(w_1, w_2, b_1, b_2, x_data, t_data):
     x = Variable(x_data)
     t = Variable(t_data)
 
@@ -139,7 +139,7 @@ if __name__ == '__main__':
         # E(K×K)を出す0.5×(y-t)×(y-t).T次元数は，{0.5×(1×K)(K×1)}
         # E = sum(t×log(y)(1×K))
         # 訓練データセットの交差エントロピー誤差と正解率を表示する
-        train_error, train_accuracy = error_and_accuracy(w_1, w_2,
+        train_error, train_accuracy = error_and_accuracy(w_1, w_2, b_1, b_2, 
                                                          x_train, t_train)
         print "[train] Error:", train_error
         print "[train] Accuracy:", train_accuracy
@@ -147,7 +147,7 @@ if __name__ == '__main__':
         train_accuracy_history.append(train_accuracy)
 
         # 検証データセットの交差エントロピー誤差と正解率を表示する
-        valid_error, valid_accuracy = error_and_accuracy(w_1, w_2,
+        valid_error, valid_accuracy = error_and_accuracy(w_1, w_2, b_1, b_2,
                                                          x_valid, t_valid)
         print "[valid] Error:", valid_error
         print "[valid] Accuracy:", valid_accuracy
@@ -182,7 +182,7 @@ if __name__ == '__main__':
             print
 
     # 学習済みのモデルをテストセットで誤差と正解率を求める
-    test_error, test_accuracy = error_and_accuracy(w_1, w_2,
+    test_error, test_accuracy = error_and_accuracy(w_1, w_2, b_1, b_2,
                                                    x_test, t_test)
 
     print "[test]  Accuracy:", test_accuracy

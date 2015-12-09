@@ -128,6 +128,8 @@ if __name__ == '__main__':
         print "[valid] Accuracy:", valid_accuracy
         loss_valid_history.append(valid_loss.data)
         valid_accuracy_history.append(valid_accuracy)
+        print "|w_1|:", np.linalg.norm(model.linear_1.W.data)
+        print "|w_2|:", np.linalg.norm(model.linear_2.W.data)
 
         # 学習曲線をプロットする
         # plot learning curves

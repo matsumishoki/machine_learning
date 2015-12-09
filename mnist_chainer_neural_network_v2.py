@@ -130,19 +130,25 @@ if __name__ == '__main__':
         valid_accuracy_history.append(valid_accuracy)
 
         # 学習曲線をプロットする
-        plt.plot(loss_history, label="loss")
-        plt.plot(loss_valid_history, label="valid_loss")
-        plt.title("error")
-        plt.legend(['train_loss', 'valid_loss'])
+        # plot learning curves
+        plt.subplot(1, 2, 1)
+        plt.title("Loss")
+        plt.plot(loss_history)
+        plt.plot(loss_valid_history)
+        plt.legend(["train", "valid"], loc="best")
+        plt.ylim([0.0, 0.5])
         plt.grid()
-        plt.show()
 
-        plt.plot(train_accuracy_history, label="train_accuracy")
-        plt.plot(valid_accuracy_history, label="valid_accuracy")
-        plt.legend(loc="lower right")
-        plt.title("train_accuracy")
+        plt.subplot(1, 2, 2)
+        plt.title("Accuracy")
+        plt.plot(train_accuracy_history)
+        plt.plot(valid_accuracy_history)
+        plt.legend(["train", "valid"], loc="best")
+        plt.ylim([90, 100])
         plt.grid()
+        plt.tight_layout()
         plt.show()
+        plt.draw()
 
         # 検証データの誤差が良ければwの最善値を保存する
         if valid_loss.data <= valid_loss_best:

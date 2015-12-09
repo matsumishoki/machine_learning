@@ -20,13 +20,15 @@ def loss_and_accuracy(model, x_data, t_data):
     x = Variable(x_data)
     t = Variable(t_data)
 
-    a_z = linear_1(x)
+    # 順伝播
+    a_z = model.linear_1(x)
     z = F.tanh(a_z)
-    a_y = linear_2(z)
-
+    a_y = model.linear_2(z)
+    
     loss = F.softmax_cross_entropy(a_y, t)
     accuracy = F.accuracy(a_y, t)
-    return loss.data, accuracy.data * 100
+
+    return loss, accuracy.data * 100
 
 if __name__ == '__main__':
     x_train, t_train, x_test, t_test = load_mnist.load_mnist()
@@ -72,15 +74,15 @@ if __name__ == '__main__':
     optimizer.setup(model)
 
 
-    error_history = []
+    loss_history = []
     train_accuracy_history = []
-    error_valid_history = []
+    loss_valid_history = []
     valid_accuracy_history = []
 
     w_1_best = 0
     w_2_best = 0
     valid_accuracy_best = 0
-    valid_error_best = 10
+    valid_loss_best = 10
     num_batches = num_train / batch_size  # ミニバッチの個数
     num_valid_batches = num_valid / batch_size
 
@@ -96,20 +98,12 @@ if __name__ == '__main__':
             x_batch = x_train[batch_indexes]
             t_batch = t_train[batch_indexes]
 
-            x = Variable(x_batch)
-            t = Variable(t_batch)
+            batch_loss, batch_accuracy = loss_and_accuracy(model, x_batch,
+                                                            t_batch)
 
-            # 順伝播
-            a_z = linear_1(x)
-            z = F.tanh(a_z)
-            a_y = linear_2(z)
-            
-            # 逆伝播            
-            loss = F.softmax_cross_entropy(a_y, t)
-            accuracy = F.accuracy(a_y, t)
-
+            # 逆伝播
             optimizer.zero_grads()
-            loss.backward()
+            batch_loss.backward()
             optimizer.update()
 
         time_finish = time.time()
@@ -120,26 +114,26 @@ if __name__ == '__main__':
         # E(K×K)を出す0.5×(y-t)×(y-t).T次元数は，{0.5×(1×K)(K×1)}
         # E = sum(t×log(y)(1×K))
         # 訓練データセットの交差エントロピー誤差と正解率を表示する
-        train_error, train_accuracy = loss_and_accuracy(model, 
+        train_loss, train_accuracy = loss_and_accuracy(model, 
                                                          x_train, t_train)
-        print "[train] Error:", train_error
+        print "[train] Loss:", train_loss.data
         print "[train] Accuracy:", train_accuracy
-        error_history.append(train_error)
+        loss_history.append(train_loss.data)
         train_accuracy_history.append(train_accuracy)
 
         # 検証データセットの交差エントロピー誤差と正解率を表示する
-        valid_error, valid_accuracy = loss_and_accuracy(model,
+        valid_loss, valid_accuracy = loss_and_accuracy(model,
                                                          x_valid, t_valid)
-        print "[valid] Error:", valid_error
+        print "[valid] Loss:", valid_loss.data
         print "[valid] Accuracy:", valid_accuracy
-        error_valid_history.append(valid_error)
+        loss_valid_history.append(valid_loss.data)
         valid_accuracy_history.append(valid_accuracy)
 
         # 学習曲線をプロットする
-        plt.plot(error_history, label="error")
-        plt.plot(error_valid_history, label="valid_error")
+        plt.plot(loss_history, label="loss")
+        plt.plot(loss_valid_history, label="valid_loss")
         plt.title("error")
-        plt.legend(['train_error', 'valid_error'])
+        plt.legend(['train_loss', 'valid_loss'])
         plt.grid()
         plt.show()
 
@@ -151,13 +145,13 @@ if __name__ == '__main__':
         plt.show()
 
         # 検証データの誤差が良ければwの最善値を保存する
-        if valid_error <= valid_error_best:
+        if valid_loss.data <= valid_loss_best:
             model_best = copy.deepcopy(model)
             epoch_best = epoch
-            valid_error_best = valid_error
+            valid_loss_best = valid_loss.data
             valid_accuracy_best = valid_accuracy
             print "epoch_best:", epoch_best
-            print "valid_error_best:", valid_error_best
+            print "valid_loss_best:", valid_loss_best
             print "valid_accuracy_best:", valid_accuracy_best
             print
     # 学習済みのモデルをテストセットで誤差と正解率を求める
@@ -166,7 +160,7 @@ if __name__ == '__main__':
 
     print "[test]  Accuracy:", test_accuracy
     print "[valid] Accuracy (best)  :", valid_accuracy_best
-    print "[valid] Error (best):", valid_error_best
+    print "[valid] Loss (best):", valid_loss_best
     print "Best epoch :", epoch_best
     print "Finish epoch:", epoch
     print "Batch size:", batch_size

@@ -58,8 +58,8 @@ if __name__ == '__main__':
     dim_features = x_train.shape[-1]  # xの次元
 
     # 超パラメータの定義
-    learning_rate = 0.1  # learning_rate(学習率)を定義する
-    max_iteration = 100      # 学習させる回数
+    learning_rate = 0.5  # learning_rate(学習率)を定義する
+    max_iteration = 110      # 学習させる回数
     w_scale = 0.1        # wのノルムの大きさを調整する変数
     batch_size = 200       # ミニバッチ1つあたりのサンプル数
     dim_hidden = 200         # 隠れ層の次元数を定義する

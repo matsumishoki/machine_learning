@@ -155,7 +155,7 @@ if __name__ == '__main__':
             print "valid_accuracy_best:", valid_accuracy_best
             print
     # 学習済みのモデルをテストセットで誤差と正解率を求める
-    test_error, test_accuracy = loss_and_accuracy(model,
+    test_error, test_accuracy = loss_and_accuracy(model_best,
                                                    x_test, t_test)
 
     print "[test]  Accuracy:", test_accuracy

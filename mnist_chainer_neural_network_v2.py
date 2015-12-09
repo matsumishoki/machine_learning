@@ -16,7 +16,7 @@ from chainer import Variable, FunctionSet
 from chainer.optimizers import SGD, Adam
 
 
-def error_and_accuracy(model, x_data, t_data):
+def loss_and_accuracy(model, x_data, t_data):
     x = Variable(x_data)
     t = Variable(t_data)
 
@@ -86,7 +86,7 @@ if __name__ == '__main__':
 
     # 学習させるループ
     for epoch in range(max_iteration):
-#        print "epoch:", epoch
+        print "epoch:", epoch
 
         # mini batchi SGDで重みを更新させるループ
         time_start = time.time()
@@ -120,7 +120,7 @@ if __name__ == '__main__':
         # E(K×K)を出す0.5×(y-t)×(y-t).T次元数は，{0.5×(1×K)(K×1)}
         # E = sum(t×log(y)(1×K))
         # 訓練データセットの交差エントロピー誤差と正解率を表示する
-        train_error, train_accuracy = error_and_accuracy(model, 
+        train_error, train_accuracy = loss_and_accuracy(model, 
                                                          x_train, t_train)
         print "[train] Error:", train_error
         print "[train] Accuracy:", train_accuracy
@@ -128,7 +128,7 @@ if __name__ == '__main__':
         train_accuracy_history.append(train_accuracy)
 
         # 検証データセットの交差エントロピー誤差と正解率を表示する
-        valid_error, valid_accuracy = error_and_accuracy(model,
+        valid_error, valid_accuracy = loss_and_accuracy(model,
                                                          x_valid, t_valid)
         print "[valid] Error:", valid_error
         print "[valid] Accuracy:", valid_accuracy
@@ -161,7 +161,7 @@ if __name__ == '__main__':
             print "valid_accuracy_best:", valid_accuracy_best
             print
     # 学習済みのモデルをテストセットで誤差と正解率を求める
-    test_error, test_accuracy = error_and_accuracy(model,
+    test_error, test_accuracy = loss_and_accuracy(model,
                                                    x_test, t_test)
 
     print "[test]  Accuracy:", test_accuracy

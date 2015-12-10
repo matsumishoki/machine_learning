@@ -130,6 +130,8 @@ if __name__ == '__main__':
         valid_accuracy_history.append(valid_accuracy)
         print "|w_1|:", np.linalg.norm(model.linear_1.W.data)
         print "|w_2|:", np.linalg.norm(model.linear_2.W.data)
+        print "|b_1|:", np.linalg.norm(model.linear_1.b.data)
+        print "|b_2|:", np.linalg.norm(model.linear_2.b.data)
 
         # 学習曲線をプロットする
         # plot learning curves

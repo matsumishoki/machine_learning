@@ -80,6 +80,8 @@ if __name__ == '__main__':
     valid_accuracy_history = []
     w_1_grad_norms = []
     w_2_grad_norms = []
+    b_1_grad_norms = []
+    b_2_grad_norms = []
     
     w_1_best = 0
     w_2_best = 0
@@ -112,6 +114,11 @@ if __name__ == '__main__':
             w_1_grad_norms.append(w_1_grad_norm)
             w_2_grad_norm = np.linalg.norm(model.linear_2.W.grad)
             w_2_grad_norms.append(w_2_grad_norm)
+            
+            b_1_grad_norm = np.linalg.norm(model.linear_1.b.grad)
+            b_1_grad_norms.append(b_1_grad_norm)
+            b_2_grad_norm = np.linalg.norm(model.linear_2.b.grad)
+            b_2_grad_norms.append(b_2_grad_norm)
         
         
         time_finish = time.time()
@@ -140,6 +147,8 @@ if __name__ == '__main__':
 
         print "w_1_grad_mean:", np.mean(w_1_grad_norms, dtype=np.float32)
         print "w_2_grad_mean:", np.mean(w_2_grad_norms, dtype=np.float32)
+        print "b_1_grad_mean:", np.mean(b_1_grad_norms, dtype=np.float32)
+        print "b_2_grad_mean:", np.mean(b_2_grad_norms, dtype=np.float32)
         print "|w_1|:", np.linalg.norm(model.linear_1.W.data)
         print "|w_2|:", np.linalg.norm(model.linear_2.W.data)
         print "|b_1|:", np.linalg.norm(model.linear_1.b.data)

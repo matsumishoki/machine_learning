@@ -79,6 +79,7 @@ if __name__ == '__main__':
     loss_valid_history = []
     valid_accuracy_history = []
     w_1_grad_norms = []
+    w_2_grad_norms = []
     
     w_1_best = 0
     w_2_best = 0
@@ -109,9 +110,14 @@ if __name__ == '__main__':
             
             w_1_grad_norm = np.linalg.norm(model.linear_1.W.grad)
             w_1_grad_norms.append(w_1_grad_norm)
+            w_2_grad_norm = np.linalg.norm(model.linear_2.W.grad)
+            w_2_grad_norms.append(w_2_grad_norm)
         
         w_1_grad_mean = np.mean(w_1_grad_norms, dtype=np.float32)
         print "w_1_grad_mean:", w_1_grad_mean
+        w_2_grad_mean = np.mean(w_2_grad_norms, dtype=np.float32)
+        print "w_2_grad_mean:", w_2_grad_mean
+        
         time_finish = time.time()
         time_elapsed = time_finish - time_start
         print "time_elapsed:", time_elapsed

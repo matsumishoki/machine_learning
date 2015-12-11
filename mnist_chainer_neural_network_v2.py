@@ -13,7 +13,7 @@ import time
 import copy
 import chainer.functions as F
 from chainer import Variable, FunctionSet
-from chainer.optimizers import SGD, Adam
+from chainer.optimizers import SGD
 
 
 def loss_and_accuracy(model, x_data, t_data):
@@ -78,7 +78,8 @@ if __name__ == '__main__':
     train_accuracy_history = []
     loss_valid_history = []
     valid_accuracy_history = []
-
+    w_1_grad_norms = []
+    
     w_1_best = 0
     w_2_best = 0
     valid_accuracy_best = 0
@@ -105,7 +106,12 @@ if __name__ == '__main__':
             optimizer.zero_grads()
             batch_loss.backward()
             optimizer.update()
-
+            
+            w_1_grad_norm = np.linalg.norm(model.linear_1.W.grad)
+            w_1_grad_norms.append(w_1_grad_norm)
+        
+        w_1_grad_mean = np.mean(w_1_grad_norms, dtype=np.float32)
+        print "w_1_grad_mean:", w_1_grad_mean
         time_finish = time.time()
         time_elapsed = time_finish - time_start
         print "time_elapsed:", time_elapsed
@@ -140,7 +146,7 @@ if __name__ == '__main__':
         plt.plot(loss_history)
         plt.plot(loss_valid_history)
         plt.legend(["train", "valid"], loc="best")
-        plt.ylim([0.0, 0.5])
+        plt.ylim([0.0, 0.4])
         plt.grid()
 
         plt.subplot(1, 2, 2)
@@ -148,7 +154,7 @@ if __name__ == '__main__':
         plt.plot(train_accuracy_history)
         plt.plot(valid_accuracy_history)
         plt.legend(["train", "valid"], loc="best")
-        plt.ylim([90, 100])
+        plt.ylim([91, 100])
         plt.grid()
         plt.tight_layout()
         plt.show()

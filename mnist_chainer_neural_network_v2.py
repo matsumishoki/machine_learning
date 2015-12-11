@@ -113,10 +113,6 @@ if __name__ == '__main__':
             w_2_grad_norm = np.linalg.norm(model.linear_2.W.grad)
             w_2_grad_norms.append(w_2_grad_norm)
         
-        w_1_grad_mean = np.mean(w_1_grad_norms, dtype=np.float32)
-        print "w_1_grad_mean:", w_1_grad_mean
-        w_2_grad_mean = np.mean(w_2_grad_norms, dtype=np.float32)
-        print "w_2_grad_mean:", w_2_grad_mean
         
         time_finish = time.time()
         time_elapsed = time_finish - time_start
@@ -138,8 +134,12 @@ if __name__ == '__main__':
                                                          x_valid, t_valid)
         print "[valid] Loss:", valid_loss.data
         print "[valid] Accuracy:", valid_accuracy
+        print
         loss_valid_history.append(valid_loss.data)
         valid_accuracy_history.append(valid_accuracy)
+
+        print "w_1_grad_mean:", np.mean(w_1_grad_norms, dtype=np.float32)
+        print "w_2_grad_mean:", np.mean(w_2_grad_norms, dtype=np.float32)
         print "|w_1|:", np.linalg.norm(model.linear_1.W.data)
         print "|w_2|:", np.linalg.norm(model.linear_2.W.data)
         print "|b_1|:", np.linalg.norm(model.linear_1.b.data)

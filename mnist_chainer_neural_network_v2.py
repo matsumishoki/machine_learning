@@ -78,13 +78,7 @@ if __name__ == '__main__':
     train_accuracy_history = []
     loss_valid_history = []
     valid_accuracy_history = []
-    w_1_grad_norms = []
-    w_2_grad_norms = []
-    b_1_grad_norms = []
-    b_2_grad_norms = []
         
-    w_1_best = 0
-    w_2_best = 0
     valid_accuracy_best = 0
     valid_loss_best = 10
     num_batches = num_train / batch_size  # ミニバッチの個数

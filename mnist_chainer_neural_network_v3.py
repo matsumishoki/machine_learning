@@ -22,9 +22,9 @@ def loss_and_accuracy(model, x_data, t_data):
 
     # 順伝播
     a_z_1 = model.linear_1(x)
-    z_1 = F.tanh(a_z_1)
+    z_1 = F.relu(a_z_1)
     a_z_2 = model.linear_2(z_1)
-    z_2 = F.tanh(a_z_2)
+    z_2 = F.relu(a_z_2)
     a_y = model.linear_3(z_2)
 
     loss = F.softmax_cross_entropy(a_y, t)

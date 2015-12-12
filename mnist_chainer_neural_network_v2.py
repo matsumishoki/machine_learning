@@ -24,7 +24,7 @@ def loss_and_accuracy(model, x_data, t_data):
     a_z = model.linear_1(x)
     z = F.tanh(a_z)
     a_y = model.linear_2(z)
-    
+
     loss = F.softmax_cross_entropy(a_y, t)
     accuracy = F.accuracy(a_y, t)
 
@@ -69,16 +69,15 @@ if __name__ == '__main__':
     linear_2 = F.Linear(dim_hidden, num_classes)
     model = FunctionSet(linear_1=linear_1,
                         linear_2=linear_2)
-                        
+
     optimizer = SGD(learning_rate)
     optimizer.setup(model)
-
 
     loss_history = []
     train_accuracy_history = []
     loss_valid_history = []
     valid_accuracy_history = []
-        
+
     valid_accuracy_best = 0
     valid_loss_best = 10
     num_batches = num_train / batch_size  # ミニバッチの個数
@@ -100,25 +99,24 @@ if __name__ == '__main__':
             x_batch = x_train[batch_indexes]
             t_batch = t_train[batch_indexes]
 
-            batch_loss, batch_accuracy = loss_and_accuracy(model, x_batch,
-                                                            t_batch)
+            batch_loss, batch_accuracy = loss_and_accuracy(model,
+                                                           x_batch, t_batch)
 
             # 逆伝播
             optimizer.zero_grads()
             batch_loss.backward()
             optimizer.update()
-            
+
             w_1_grad_norm = np.linalg.norm(model.linear_1.W.grad)
             w_1_grad_norms.append(w_1_grad_norm)
             w_2_grad_norm = np.linalg.norm(model.linear_2.W.grad)
             w_2_grad_norms.append(w_2_grad_norm)
-            
+
             b_1_grad_norm = np.linalg.norm(model.linear_1.b.grad)
             b_1_grad_norms.append(b_1_grad_norm)
             b_2_grad_norm = np.linalg.norm(model.linear_2.b.grad)
             b_2_grad_norms.append(b_2_grad_norm)
-        
-        
+
         time_finish = time.time()
         time_elapsed = time_finish - time_start
         print "time_elapsed:", time_elapsed
@@ -127,8 +125,8 @@ if __name__ == '__main__':
         # E(K×K)を出す0.5×(y-t)×(y-t).T次元数は，{0.5×(1×K)(K×1)}
         # E = sum(t×log(y)(1×K))
         # 訓練データセットの交差エントロピー誤差と正解率を表示する
-        train_loss, train_accuracy = loss_and_accuracy(model, 
-                                                         x_train, t_train)
+        train_loss, train_accuracy = loss_and_accuracy(model,
+                                                       x_train, t_train)
         print "[train] Loss:", train_loss.data
         print "[train] Accuracy:", train_accuracy
         loss_history.append(train_loss.data)
@@ -136,7 +134,7 @@ if __name__ == '__main__':
 
         # 検証データセットの交差エントロピー誤差と正解率を表示する
         valid_loss, valid_accuracy = loss_and_accuracy(model,
-                                                         x_valid, t_valid)
+                                                       x_valid, t_valid)
         print "[valid] Loss:", valid_loss.data
         print "[valid] Accuracy:", valid_accuracy
         print
@@ -185,7 +183,7 @@ if __name__ == '__main__':
             print
     # 学習済みのモデルをテストセットで誤差と正解率を求める
     test_error, test_accuracy = loss_and_accuracy(model_best,
-                                                   x_test, t_test)
+                                                  x_test, t_test)
 
     print "[test]  Accuracy:", test_accuracy
     print "[valid] Accuracy (best)  :", valid_accuracy_best
@@ -208,4 +206,3 @@ if __name__ == '__main__':
         w_true = w_k[0:784]  # w_trueとは結果をプロットするために定義したものである
         ax.matshow(w_true.reshape(28, 28), cmap=plt.cm.gray)
     plt.show()
-

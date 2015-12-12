@@ -82,7 +82,7 @@ if __name__ == '__main__':
     w_2_grad_norms = []
     b_1_grad_norms = []
     b_2_grad_norms = []
-    
+        
     w_1_best = 0
     w_2_best = 0
     valid_accuracy_best = 0
@@ -93,6 +93,10 @@ if __name__ == '__main__':
     # 学習させるループ
     for epoch in range(max_iteration):
         print "epoch:", epoch
+        w_1_grad_norms = []
+        w_2_grad_norms = []
+        b_1_grad_norms = []
+        b_2_grad_norms = []
 
         # mini batchi SGDで重みを更新させるループ
         time_start = time.time()

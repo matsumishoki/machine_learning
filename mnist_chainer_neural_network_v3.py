@@ -63,14 +63,17 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.5  # learning_rate(学習率)を定義する
-    max_iteration = 100      # 学習させる回数
+    max_iteration = 500      # 学習させる回数
     batch_size = 200       # ミニバッチ1つあたりのサンプル数
-    dim_hidden_1 = 200         # 隠れ層の次元数を定義する
-    dim_hidden_2 = 200
+    dim_hidden_1 = 100         # 隠れ層の次元数を定義する
+    dim_hidden_2 = 100
+    wscale_1 = 2.0
+    wscale_2 = 2.0
+    wscale_3 = 2.0
 
-    linear_1 = F.Linear(dim_features, dim_hidden_1)
-    linear_2 = F.Linear(dim_hidden_1, dim_hidden_2)
-    linear_3 = F.Linear(dim_hidden_2, num_classes)
+    linear_1 = F.Linear(dim_features, dim_hidden_1, wscale=wscale_1)
+    linear_2 = F.Linear(dim_hidden_1, dim_hidden_2, wscale=wscale_2)
+    linear_3 = F.Linear(dim_hidden_2, num_classes, wscale=wscale_3)
     model = FunctionSet(linear_1=linear_1,
                         linear_2=linear_2,
                         linear_3=linear_3)
@@ -203,12 +206,16 @@ if __name__ == '__main__':
     print "[test]  Accuracy:", test_accuracy
     print "[valid] Accuracy (best)  :", valid_accuracy_best
     print "[valid] Loss (best):", valid_loss_best
+    print "[train] Loss:", train_loss.data
     print "Best epoch :", epoch_best
     print "Finish epoch:", epoch
     print "Batch size:", batch_size
     print "Learning rate:", learning_rate
     print "dim_hidden_1:", dim_hidden_1
     print "dim_hidden_2:", dim_hidden_2
+    print "wscale_1:", wscale_1
+    print "wscale_2:", wscale_2
+    print "wscale_3:", wscale_3
 
     print
 

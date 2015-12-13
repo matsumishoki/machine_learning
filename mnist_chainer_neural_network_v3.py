@@ -125,8 +125,8 @@ if __name__ == '__main__':
             b_1_grad_norms.append(b_1_grad_norm)
             b_2_grad_norm = np.linalg.norm(model.linear_2.b.grad)
             b_2_grad_norms.append(b_2_grad_norm)
-            b_3_grad_norm = np.linalg.norm(model.linear_2.b.grad)
-            b_3_grad_norms.append(b_2_grad_norm)
+            b_3_grad_norm = np.linalg.norm(model.linear_3.b.grad)
+            b_3_grad_norms.append(b_3_grad_norm)
 
         time_finish = time.time()
         time_elapsed = time_finish - time_start

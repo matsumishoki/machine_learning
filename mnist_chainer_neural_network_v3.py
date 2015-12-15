@@ -13,7 +13,7 @@ import time
 import copy
 import chainer.functions as F
 from chainer import Variable, FunctionSet
-from chainer.optimizers import SGD
+import chainer.optimizers
 
 
 def loss_and_accuracy(model, x_data, t_data):
@@ -62,14 +62,14 @@ if __name__ == '__main__':
     dim_features = x_train.shape[-1]  # xの次元
 
     # 超パラメータの定義
-    learning_rate = 0.5  # learning_rate(学習率)を定義する
-    max_iteration = 500      # 学習させる回数
+    learning_rate = 0.01  # learning_rate(学習率)を定義する
+    max_iteration = 100      # 学習させる回数
     batch_size = 200       # ミニバッチ1つあたりのサンプル数
     dim_hidden_1 = 100         # 隠れ層の次元数を定義する
     dim_hidden_2 = 100
-    wscale_1 = 2.0
-    wscale_2 = 2.0
-    wscale_3 = 2.0
+    wscale_1 = 1.0
+    wscale_2 = 1.0
+    wscale_3 = 1.0
 
     linear_1 = F.Linear(dim_features, dim_hidden_1, wscale=wscale_1)
     linear_2 = F.Linear(dim_hidden_1, dim_hidden_2, wscale=wscale_2)
@@ -78,7 +78,7 @@ if __name__ == '__main__':
                         linear_2=linear_2,
                         linear_3=linear_3)
 
-    optimizer = SGD(learning_rate)
+    optimizer = chainer.optimizers.NesterovAG(learning_rate, momentum=0.9)
     optimizer.setup(model)
 
     loss_history = []

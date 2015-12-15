@@ -70,6 +70,7 @@ if __name__ == '__main__':
     wscale_1 = 1.0
     wscale_2 = 1.0
     wscale_3 = 1.0
+    l_2 = 0.001
 
     linear_1 = F.Linear(dim_features, dim_hidden_1, wscale=wscale_1)
     linear_2 = F.Linear(dim_hidden_1, dim_hidden_2, wscale=wscale_2)
@@ -115,6 +116,7 @@ if __name__ == '__main__':
             # 逆伝播
             optimizer.zero_grads()
             batch_loss.backward()
+            optimizer.weight_decay(l_2)
             optimizer.update()
 
             w_1_grad_norm = np.linalg.norm(model.linear_1.W.grad)

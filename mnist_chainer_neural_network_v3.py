@@ -16,15 +16,17 @@ from chainer import Variable, FunctionSet
 import chainer.optimizers
 
 
-def loss_and_accuracy(model, x_data, t_data):
+def loss_and_accuracy(model, x_data, t_data, train=False):
     x = Variable(x_data)
     t = Variable(t_data)
 
     # 順伝播
     a_z_1 = model.linear_1(x)
     z_1 = F.relu(a_z_1)
+    z_1 = F.dropout(z_1, ratio=0.9, train=train)
     a_z_2 = model.linear_2(z_1)
     z_2 = F.relu(a_z_2)
+    z_2 = F.dropout(z_2, ratio=0.9, train=train)
     a_y = model.linear_3(z_2)
 
     loss = F.softmax_cross_entropy(a_y, t)
@@ -63,14 +65,14 @@ if __name__ == '__main__':
 
     # 超パラメータの定義
     learning_rate = 0.01  # learning_rate(学習率)を定義する
-    max_iteration = 100      # 学習させる回数
+    max_iteration = 1000      # 学習させる回数
     batch_size = 200       # ミニバッチ1つあたりのサンプル数
-    dim_hidden_1 = 100         # 隠れ層の次元数を定義する
-    dim_hidden_2 = 100
+    dim_hidden_1 = 500         # 隠れ層の次元数を定義する
+    dim_hidden_2 = 500
     wscale_1 = 1.0
     wscale_2 = 1.0
     wscale_3 = 1.0
-    l_2 = 0.001
+    l_2 = 0.0015
 
     linear_1 = F.Linear(dim_features, dim_hidden_1, wscale=wscale_1)
     linear_2 = F.Linear(dim_hidden_1, dim_hidden_2, wscale=wscale_2)
@@ -111,12 +113,13 @@ if __name__ == '__main__':
             t_batch = t_train[batch_indexes]
 
             batch_loss, batch_accuracy = loss_and_accuracy(model,
-                                                           x_batch, t_batch)
+                                                           x_batch, t_batch,
+                                                           train=True)
 
             # 逆伝播
             optimizer.zero_grads()
             batch_loss.backward()
-            optimizer.weight_decay(l_2)
+#            optimizer.weight_decay(l_2)
             optimizer.update()
 
             w_1_grad_norm = np.linalg.norm(model.linear_1.W.grad)
@@ -218,16 +221,17 @@ if __name__ == '__main__':
     print "wscale_1:", wscale_1
     print "wscale_2:", wscale_2
     print "wscale_3:", wscale_3
+    print "l_2:", l_2
 
     print
 
     # wの可視化
     print "|w_1_best|:", np.linalg.norm(model.linear_1.W.data)
-    print "w_1_best:", model.linear_1.W.data
+    # print "w_1_best:", model.linear_1.W.data
     print "|w_2_best|:", np.linalg.norm(model.linear_2.W.data)
-    print "w_2_best:", model.linear_2.W.data
+    # print "w_2_best:", model.linear_2.W.data
     print "|w_3_best|:", np.linalg.norm(model.linear_3.W.data)
-    print "w_3_best:", model.linear_3.W.data
+    # print "w_3_best:", model.linear_3.W.data
     w_best = np.dot(model.linear_2.W.data, model.linear_1.W.data)
     w_best = np.dot(model.linear_3.W.data, w_best)
     fig, axes = plt.subplots(2, 5,  figsize=(10, 4))

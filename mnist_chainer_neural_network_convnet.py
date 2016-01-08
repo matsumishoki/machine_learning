@@ -23,7 +23,9 @@ def loss_and_accuracy(model, x_data, t_data, train=False):
     t = Variable(t_data)
 
     # 順伝播
-    h = model.conv_1(x)
+    h = model.conv_11(x)
+    h = model.conv_12(h)
+#    h = model.conv_13(h)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
     h = model.conv_2(h)
@@ -82,7 +84,9 @@ if __name__ == '__main__':
     wscale_3 = 1.0
     l_2 = 0.0015
 
-    model = FunctionSet(conv_1=F.Convolution2D(1, 50, 5),
+    model = FunctionSet(conv_11=F.Convolution2D(1, 50, 5),
+                        conv_12=F.Convolution2D(50, 50, 1),
+#                        conv_13=F.Convolution2D(50, 50, 1),
                         conv_2=F.Convolution2D(50, 100, 5),
                         conv_3=F.Convolution2D(100, 200, 4),
                         linear_1=F.Linear(200, 400, wscale=wscale_1),
@@ -99,7 +103,7 @@ if __name__ == '__main__':
 
     valid_accuracy_best = 0
     valid_loss_best = 10
-    num_batches = num_train / batch_size  # ミニバッチの個数
+    num_train_batches = num_train / batch_size  # ミニバッチの個数
     num_valid_batches = num_valid / batch_size
 
     # 学習させるループ
@@ -114,9 +118,9 @@ if __name__ == '__main__':
 
         # mini batchi SGDで重みを更新させるループ
         time_start = time.time()
-        perm = np.random.permutation(num_train)
+        perm_train = np.random.permutation(num_train)
 
-        for batch_indexes in np.array_split(perm, num_batches):
+        for batch_indexes in np.array_split(perm_train, num_train_batches):
             x_batch = cuda.to_gpu(x_train[batch_indexes])
             t_batch = cuda.to_gpu(t_train[batch_indexes])
 
@@ -161,9 +165,15 @@ if __name__ == '__main__':
         train_accuracy_history.append(train_accuracy)
 
         # 検証データセットの交差エントロピー誤差と正解率を表示する
+        perm_valid = np.random.permutation(num_valid)
+
+        for batch_indexes in np.array_split(perm_valid, num_valid_batches):
+            x_batch_valid = cuda.to_gpu(x_valid[batch_indexes])
+            t_batch_valid = cuda.to_gpu(t_valid[batch_indexes])
+
         valid_loss, valid_accuracy = loss_and_accuracy(model,
-                                                       cuda.to_gpu(x_valid),
-                                                       cuda.to_gpu(t_valid))
+                                                       x_batch_valid,
+                                                       t_batch_valid)
         print "[valid] Loss:", valid_loss.data
         print "[valid] Accuracy:", valid_accuracy
         print

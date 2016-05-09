@@ -34,3 +34,11 @@ if __name__ == '__main__':
     dim_features = x_train.shape[-1]  # xの次元
 
     # 超パラメータの定義
+
+    # 一番外側のループ
+
+        # 順伝播する
+
+        # gradientを計算する
+
+        # 逆伝播する

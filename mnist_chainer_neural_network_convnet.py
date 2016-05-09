@@ -25,7 +25,6 @@ def loss_and_accuracy(model, x_data, t_data, train=False):
     # 順伝播
     h = model.conv_11(x)
     h = model.conv_12(h)
-#    h = model.conv_13(h)
     h = F.max_pooling_2d(h, 2)
     h = F.relu(h)
     h = model.conv_2(h)
@@ -33,10 +32,8 @@ def loss_and_accuracy(model, x_data, t_data, train=False):
     h = F.relu(h)
     h = model.conv_3(h)
     h = F.relu(h)
-    h = F.dropout(h, ratio=0.9, train=train)
     h = model.linear_1(h)
     h = F.relu(h)
-    h = F.dropout(h, ratio=0.9, train=train)
     a_y = model.linear_2(h)
 
     loss = F.softmax_cross_entropy(a_y, t)
@@ -74,9 +71,9 @@ if __name__ == '__main__':
     dim_features = x_train.shape[-1]  # xの次元
 
     # 超パラメータの定義
-    learning_rate = 0.0001  # learning_rate(学習率)を定義する
+    learning_rate = 0.000001  # learning_rate(学習率)を定義する
     max_iteration = 1000      # 学習させる回数
-    batch_size = 100       # ミニバッチ1つあたりのサンプル数
+    batch_size = 200       # ミニバッチ1つあたりのサンプル数
     dim_hidden_1 = 500         # 隠れ層の次元数を定義する
     dim_hidden_2 = 500
     wscale_1 = 1.0
@@ -86,7 +83,6 @@ if __name__ == '__main__':
 
     model = FunctionSet(conv_11=F.Convolution2D(1, 50, 5),
                         conv_12=F.Convolution2D(50, 50, 1),
-#                        conv_13=F.Convolution2D(50, 50, 1),
                         conv_2=F.Convolution2D(50, 100, 5),
                         conv_3=F.Convolution2D(100, 200, 4),
                         linear_1=F.Linear(200, 400, wscale=wscale_1),
@@ -115,6 +111,8 @@ if __name__ == '__main__':
         b_1_grad_norms = []
         b_2_grad_norms = []
         b_3_grad_norms = []
+        train_losses = []
+        train_accuracies = []
 
         # mini batchi SGDで重みを更新させるループ
         time_start = time.time()
@@ -131,22 +129,12 @@ if __name__ == '__main__':
             # 逆伝播
             optimizer.zero_grads()
             batch_loss.backward()
-#            optimizer.weight_decay(l_2)
             optimizer.update()
-#
-#            w_1_grad_norm = np.linalg.norm(model.linear_1.W.grad.get())
-#            w_1_grad_norms.append(w_1_grad_norm)
-#            w_2_grad_norm = np.linalg.norm(model.linear_2.W.grad.get())
-#            w_2_grad_norms.append(w_2_grad_norm)
-#            w_3_grad_norm = np.linalg.norm(model.linear_3.W.grad.get())
-#            w_3_grad_norms.append(w_3_grad_norm)
-#
-#            b_1_grad_norm = np.linalg.norm(model.linear_1.b.grad.get())
-#            b_1_grad_norms.append(b_1_grad_norm)
-#            b_2_grad_norm = np.linalg.norm(model.linear_2.b.grad.get())
-#            b_2_grad_norms.append(b_2_grad_norm)
-#            b_3_grad_norm = np.linalg.norm(model.linear_3.b.grad.get())
-#            b_3_grad_norms.append(b_3_grad_norm)
+
+            w_1_grad_norm = np.linalg.norm(model.linear_1.W.grad.get())
+            w_1_grad_norms.append(w_1_grad_norm)
+            w_2_grad_norm = np.linalg.norm(model.linear_2.W.grad.get())
+            w_2_grad_norms.append(w_2_grad_norm)
 
         time_finish = time.time()
         time_elapsed = time_finish - time_start
@@ -156,9 +144,15 @@ if __name__ == '__main__':
         # E(K×K)を出す0.5×(y-t)×(y-t).T次元数は，{0.5×(1×K)(K×1)}
         # E = sum(t×log(y)(1×K))
         # 訓練データセットの交差エントロピー誤差と正解率を表示する
-        train_loss, train_accuracy = loss_and_accuracy(model,
-                                                       cuda.to_gpu(x_train[:1000]),
-                                                       cuda.to_gpu(t_train[:1000]))
+        for batch_indexes in np.array_split(perm_train, num_train_batches):
+            x_batch_train = cuda.to_gpu(x_train[batch_indexes])
+            t_batch_train = cuda.to_gpu(t_train[batch_indexes])
+
+            train_loss, train_accuracy = loss_and_accuracy(model,
+                                                           x_batch_train,
+                                                           t_batch_train)
+            train_losses.append(train_loss.data)
+            train_accuracies.append(train_accuracy)
         print "[train] Loss:", train_loss.data
         print "[train] Accuracy:", train_accuracy
         loss_history.append(train_loss.data.get())
@@ -171,27 +165,17 @@ if __name__ == '__main__':
             x_batch_valid = cuda.to_gpu(x_valid[batch_indexes])
             t_batch_valid = cuda.to_gpu(t_valid[batch_indexes])
 
-        valid_loss, valid_accuracy = loss_and_accuracy(model,
-                                                       x_batch_valid,
-                                                       t_batch_valid)
+            valid_loss, valid_accuracy = loss_and_accuracy(model,
+                                                           x_batch_valid,
+                                                           t_batch_valid)
         print "[valid] Loss:", valid_loss.data
         print "[valid] Accuracy:", valid_accuracy
         print
         loss_valid_history.append(valid_loss.data.get())
         valid_accuracy_history.append(valid_accuracy)
 
-#        print "w_1_grad_mean:", np.mean(w_1_grad_norms, dtype=np.float32)
-#        print "w_2_grad_mean:", np.mean(w_2_grad_norms, dtype=np.float32)
-#        print "w_3_grad_mean:", np.mean(w_3_grad_norms, dtype=np.float32)
-#        print "b_1_grad_mean:", np.mean(b_1_grad_norms, dtype=np.float32)
-#        print "b_2_grad_mean:", np.mean(b_2_grad_norms, dtype=np.float32)
-#        print "b_3_grad_mean:", np.mean(b_3_grad_norms, dtype=np.float32)
-#        print "|w_1|:", np.linalg.norm(model.linear_1.W.data.get())
-#        print "|w_2|:", np.linalg.norm(model.linear_2.W.data.get())
-#        print "|w_3|:", np.linalg.norm(model.linear_3.W.data.get())
-#        print "|b_1|:", np.linalg.norm(model.linear_1.b.data.get())
-#        print "|b_2|:", np.linalg.norm(model.linear_2.b.data.get())
-#        print "|b_3|:", np.linalg.norm(model.linear_3.b.data.get())
+        print "w_1_grad_mean:", np.mean(w_1_grad_norms, dtype=np.float32)
+        print "w_2_grad_mean:", np.mean(w_2_grad_norms, dtype=np.float32)
 
         # 学習曲線をプロットする
         # plot learning curves
@@ -225,9 +209,10 @@ if __name__ == '__main__':
             print "valid_accuracy_best:", valid_accuracy_best
             print
     # 学習済みのモデルをテストセットで誤差と正解率を求める
+
     test_error, test_accuracy = loss_and_accuracy(model_best,
-                                                  cuda.to_gpu(x_test),
-                                                  cuda.to_gpu(t_test))
+                                                  cuda.to_gpu(x_test[0]),
+                                                  cuda.to_gpu(t_test[0]))
 
     print "[test]  Accuracy:", test_accuracy
     print "[valid] Accuracy (best)  :", valid_accuracy_best
@@ -248,11 +233,8 @@ if __name__ == '__main__':
 
     # wの可視化
     print "|w_1_best|:", np.linalg.norm(model.linear_1.W.data)
-    # print "w_1_best:", model.linear_1.W.data
     print "|w_2_best|:", np.linalg.norm(model.linear_2.W.data)
-    # print "w_2_best:", model.linear_2.W.data
     print "|w_3_best|:", np.linalg.norm(model.linear_3.W.data)
-    # print "w_3_best:", model.linear_3.W.data
     w_best = np.dot(model.linear_2.W.data, model.linear_1.W.data)
     w_best = np.dot(model.linear_3.W.data, w_best)
     fig, axes = plt.subplots(2, 5,  figsize=(10, 4))

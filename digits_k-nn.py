@@ -8,7 +8,7 @@ Created on Sat Apr 30 14:52:14 2016
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.datasets import load_digits
-
+from sklearn.neighbors import KNeighborsClassifier
 
 class K_NN(object):
     def __init__(self, learning_rate=0.5, max_iteration=100):
@@ -66,3 +66,9 @@ if __name__ == '__main__':
     accuracy = np.sum(y == T)/float(num_sumples)
     print y
     print "accuracy:", accuracy
+
+    # ライブラリを使用した時
+    lib_classifier = KNeighborsClassifier()
+    lib_classifier.fit(X, T)
+    y = classifier.predict(X)
+    print "lib_classifier_accuracy:", classifier.score(X, T)

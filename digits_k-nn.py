@@ -56,19 +56,16 @@ if __name__ == '__main__':
     num_sumples = len(X)
     T = digits.target
 
+    # ライブラリを使用しない時
     classifier = K_NN()
-
     classifier.fit(X, T)
-
     y = classifier.predict(X)
-
-    print classifier.score(X, T)
-    accuracy = np.sum(y == T)/float(num_sumples)
-    print y
-    print "accuracy:", accuracy
+    print "y:", y
+    print "classifier_accuracy:", classifier.score(X, T)
 
     # ライブラリを使用した時
     lib_classifier = KNeighborsClassifier()
     lib_classifier.fit(X, T)
-    y = classifier.predict(X)
-    print "lib_classifier_accuracy:", classifier.score(X, T)
+    lib_y = lib_classifier.predict(X)
+    print "lib_y:", lib_y
+    print "lib_classifier_accuracy:", lib_classifier.score(X, T)

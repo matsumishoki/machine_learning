@@ -13,10 +13,14 @@ from sklearn.neighbors import KNeighborsClassifier
 
 class K_NN(object):
     def __init__(self, learning_rate=0.5, max_iteration=100):
-        pass
+        self.max_iteration = max_iteration
 
     def fit(self, X, y):
-        pass
+        y = self._convert_label(y)
+        for (x_i, y_i) in zip(X, y):
+           distance = x_i - y_i
+           print distance
+           return self
 
     def Kneighbors(self, X, n_neighbors=None, return_distance=True):
         pass
@@ -31,7 +35,19 @@ class K_NN(object):
         pass
 
     def score(self, X, y):
-        pass
+        predict_y = self.predict(X)
+        correct_rate = np.mean(predict_y == y)
+        return correct_rate
+
+    def _convert_label(self, y):
+        y = y.copy()
+        y[y == 0] = -1
+        return y
+
+    def _revert_label(self, y):
+        y = y.copy()
+        y[y == -1] = 0
+        return y
 
 if __name__ == '__main__':
 
@@ -42,6 +58,7 @@ if __name__ == '__main__':
 
     # ライブラリを使用しない時
     classifier = K_NN()
+    classifier.fit(X, T)
 
     # ライブラリを使用した時
     lib_classifier = KNeighborsClassifier()

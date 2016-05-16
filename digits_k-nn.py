@@ -16,11 +16,39 @@ class K_NN(object):
         self.max_iteration = max_iteration
 
     def fit(self, X, y):
-        y = self._convert_label(y)
-        for (x_i, y_i) in zip(X, y):
-           distance = x_i - y_i
-           print distance
-           return self
+        distance_history = []
+        distance_best = 1000
+        distance_best_num = []
+        x_i_best_num = []
+#        num_classes = len(np.unique(y))
+#        count = 1
+        num_samples = len(X)
+        input_data_number = np.random.choice(num_samples)
+        for n in range(num_samples):
+            distance = np.sum((X[input_data_number, :] - X[n, :])**2)
+#            print "distance", distance
+            distance_history.append(distance)
+#            print "distance_history", distance_history
+            k = np.sort(distance_history)
+            print "k", k
+            if distance < distance_best and distance != 0:
+                distance_best = distance
+                distance_best_num.append(distance)
+                x_i_best_num.append(n)
+                print "distance_best", distance_best
+        print "x_i_best_num:", x_i_best_num
+        print "distance_best_num:", distance_best_num
+        print "input_data_number:", input_data_number
+        print "distance_best:", distance_best
+
+
+#        for (x_i, y_i) in zip(X, y):
+#            print "count", count
+#            print "x_i", x_i
+#            print "y_i", y_i
+#            count = count + 1
+#            if count ==360:
+#                plt.matshow(x_i.reshape(8, 8), cmap=plt.cm.gray)
 
     def Kneighbors(self, X, n_neighbors=None, return_distance=True):
         pass
@@ -38,16 +66,6 @@ class K_NN(object):
         predict_y = self.predict(X)
         correct_rate = np.mean(predict_y == y)
         return correct_rate
-
-    def _convert_label(self, y):
-        y = y.copy()
-        y[y == 0] = -1
-        return y
-
-    def _revert_label(self, y):
-        y = y.copy()
-        y[y == -1] = 0
-        return y
 
 if __name__ == '__main__':
 

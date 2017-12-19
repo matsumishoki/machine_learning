@@ -45,11 +45,7 @@ class ConvNet(Chain):
             h = self.l_1(h)
             h = F.relu(h)
             y = self.l_2(h)
-#            loss = F.softmax_cross_entropy(a_y, t)
-#            accuracy = F.accuracy(a_y, t)
-#            return loss, cuda.to_cpu(accuracy.data) * 100
             accuracy = F.accuracy(y, t)
-#            print("acuuracy",accuracy.data*100)
             return F.softmax_cross_entropy(y, t), accuracy * 100
 
 def loss_and_accuracy_average(model, x_data, t_data, num_batches, train):
@@ -90,10 +86,6 @@ if __name__ == '__main__':
     num_train = len(x_train)
     num_valid = len(x_valid)
     num_test = len(x_test)
-    
-    # 訓練用データのshapeを(n_samples, channel, hight, width)に変更する
-#    x_train = x_train.reshape(num_train,1,28,28)
-#    x_valid = x_valid.reshape(num_valid,1,28,28)
 
     classes = np.unique(t_train)  # 定義されたクラスラベル
     num_classes = len(classes)  # クラス数
@@ -206,7 +198,7 @@ if __name__ == '__main__':
     print ("[test]  Accuracy:", test_accuracy)
     print ("[valid] Accuracy (best)  :", valid_accuracy_best)
     print ("[valid] Loss (best):", valid_loss_best)
-    print ("[train] Loss:", train_accuracy_history)
+    print ("[train] Loss:", train_accuracy_history[epoch])
     print ("Best epoch :", epoch_best)
     print ("Finish epoch:", epoch)
     print ("Batch size:", batch_size)

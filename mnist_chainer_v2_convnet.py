@@ -201,7 +201,7 @@ if __name__ == '__main__':
             
     # 検証データセットの交差エントロピー誤差と正解率を表示する
     test_accuracy, test_loss = loss_and_accuracy_average(
-        model_best, x_test, t_train, num_batches, False)
+        model_best, x_test, t_test, num_batches, False)
 
     print ("[test]  Accuracy:", test_accuracy)
     print ("[valid] Accuracy (best)  :", valid_accuracy_best)
